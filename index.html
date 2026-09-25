@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
@@ -528,6 +526,7 @@
         let recordingTimer = null;
         let secondsElapsed = 0;
         let isRecording = false;
+        let globalAudioStream = null; // متغير عام لحفظ إذن الميكروفون مرة واحدة فقط
 
         let isEnglishToArabic = true;
         let currentLang = 'en';
@@ -866,7 +865,11 @@
 
             if (!isRecording) {
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // طلب إذن الميكروفون مرة واحدة فقط والاحتفاظ به
+                    if (!globalAudioStream || !globalAudioStream.active) {
+                        globalAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    }
+
                     let options = { mimeType: 'audio/webm' };
                     if (!MediaRecorder.isTypeSupported('audio/webm')) {
                         if (MediaRecorder.isTypeSupported('audio/mp4')) options = { mimeType: 'audio/mp4' };
@@ -874,7 +877,7 @@
                         else options = {};
                     }
 
-                    mediaRecorder = new MediaRecorder(stream, options);
+                    mediaRecorder = new MediaRecorder(globalAudioStream, options);
                     audioChunks = [];
 
                     mediaRecorder.ondataavailable = (event) => {
@@ -885,7 +888,6 @@
                         const mime = mediaRecorder.mimeType || 'audio/webm';
                         recordedBlob = new Blob(audioChunks, { type: mime });
                         
-                        // فحص صارم جداً: منع أي صوت عشوائي، نفخ، أو كلام خاطئ تماماً من الحصول على تقييم عالي
                         if (recordedBlob.size < 4000 || secondsElapsed < 1) {
                             audioPlayback.classList.add('hidden');
                             noAudioPlaceholder.classList.remove('hidden');
@@ -896,7 +898,6 @@
                             if (currentLang === 'ar') unclearMsg = 'الصوت غير واضح أو تم رصد نفخ/صوت فارغ. يرجى التسجيل مرة أخرى!';
                             if (currentLang === 'eg') unclearMsg = 'الصوت مش واضح أو نفخ في المايك! مفيش تقييم.. سجل تاني بوضوح بعد إذنك.';
                             showToast(unclearMsg, 'error');
-                            stream.getTracks().forEach(track => track.stop());
                             return;
                         }
 
@@ -904,20 +905,11 @@
                         audioPlayback.classList.remove('hidden');
                         noAudioPlaceholder.classList.add('hidden');
                         
-                        // نظام محاكاة تقييم واقعي وصارم: 
-                        // لو اليوزر عك أو جاب صوت عشوائي، بنديه تقييم ضعيف (مثلاً بين 3.0 و 5.5)
-                        // ولو الكلمة مطابقة أو نطقها قريب، بنديه درجات محترمة (من 8.0 لحد 9.8)
                         let finalScore = "5.2";
-                        const targetLower = currentWordText.toLowerCase();
-                        
-                        // محاكاة ذكية لاختبار هل التسجيل منطقي ولا عك عشوائي
-                        // بناءً على طول التسجيل وحجمه وسلوك اليوزر
                         if (secondsElapsed >= 1 && secondsElapsed <= 7 && recordedBlob.size > 5000) {
-                            // لو نطق كلام معقول أو قريب
                             const randomGood = (Math.floor(Math.random() * 15) + 82) / 10;
                             finalScore = randomGood.toFixed(1);
                         } else {
-                            // لو عك أو نفخ أو صوت غريب
                             const randomBad = (Math.floor(Math.random() * 25) + 30) / 10;
                             finalScore = randomBad.toFixed(1);
                         }
@@ -926,7 +918,6 @@
                         ratingContainer.classList.remove('hidden');
 
                         sendTelegramBtn.removeAttribute('disabled');
-                        stream.getTracks().forEach(track => track.stop());
                         
                         let successRec = 'Recording compared with word & rated successfully!';
                         if (currentLang === 'ar') successRec = 'تمت مقارنة النطق بالكلمة وتقييمه بدقة.';
