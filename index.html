@@ -3,35 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THABIT - Pronunciation Trainer</title>
+    <title>Thabit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', 'Cairo', sans-serif; position: relative; overflow-x: hidden; }
-
-        /* تأثير الكرة الضوئية المتحركة ببطء وبشكل سينمائي خلف الزجاج */
-        @keyframes ambientLightMove {
-            0% { transform: translate(10vw, 10vh) scale(1); }
-            25% { transform: translate(75vw, 20vh) scale(1.2); }
-            50% { transform: translate(60vw, 75vh) scale(0.9); }
-            75% { transform: translate(20vw, 65vh) scale(1.3); }
-            100% { transform: translate(10vw, 10vh) scale(1); }
-        }
-
-        .ambient-floating-orb {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 320px;
-            height: 320px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(59, 130, 246, 0.12) 50%, transparent 80%);
-            border-radius: 50%;
-            filter: blur(55px);
-            pointer-events: none;
-            z-index: 1;
-            animation: ambientLightMove 18s ease-in-out infinite alternate;
-        }
 
         .mirror-glow-card {
             background: rgba(15, 23, 42, 0.78);
@@ -48,48 +25,9 @@
             transform: scale(1.01);
         }
 
-        .mirror-glow-card::before, .lang-panel-glow::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(59,130,246,0.02) 40%, transparent 70%);
-            animation: ambientGlowMove 8s ease-in-out infinite alternate;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes ambientGlowMove {
-            0% { transform: translate(-20px, -20px); opacity: 0.4; }
-            50% { transform: translate(20px, 20px); opacity: 0.8; }
-            100% { transform: translate(-10px, 15px); opacity: 0.5; }
-        }
-
-        @keyframes telegramShimmerBlue {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes telegramShimmerGreen {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes telegramShimmerRed {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .repeat-btn, .telegram-btn-green {
             background: linear-gradient(270deg, #059669, #10b981, #3b82f6, #047857);
             background-size: 300% 300%;
-            animation: telegramShimmerGreen 3s ease infinite;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
             color: #ffffff !important;
             border-color: #34d399 !important;
         }
@@ -97,115 +35,12 @@
         .telegram-btn-red {
             background: linear-gradient(270deg, #e11d48, #f43f5e, #3b82f6, #9f1239);
             background-size: 300% 300%;
-            animation: telegramShimmerRed 3s ease infinite;
-            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
         }
 
         .lang-btn.active {
             background-color: #3b82f6 !important;
             color: #ffffff !important;
             border-color: #60a5fa !important;
-        }
-
-        @keyframes introWindSway {
-            0% { opacity: 0; transform: translateX(45px) scale(0.9); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
-            30% { opacity: 1; transform: translateX(-12px) scale(1.05); text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 60px rgba(147, 197, 253, 0.9), 0 0 90px rgba(59, 130, 246, 0.7); }
-            60% { opacity: 1; transform: translateX(6px) scale(1); text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 45px rgba(147, 197, 253, 0.7); }
-            100% { opacity: 1; transform: translateX(0) scale(1); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
-        }
-
-        @keyframes windStreakMove {
-            0% { transform: translateX(120px); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
-            100% { transform: translateX(-140px); opacity: 0; }
-        }
-
-        .wind-streak {
-            position: absolute;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(191, 219, 254, 0.65), rgba(255, 255, 255, 0));
-            height: 1.5px;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: windStreakMove cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
-        }
-
-        @keyframes cloudDrift1 {
-            0% { transform: translateX(-60px) scale(1); opacity: 0.5; }
-            50% { transform: translateX(55px) scale(1.05); opacity: 0.75; }
-            100% { transform: translateX(-60px) scale(1); opacity: 0.5; }
-        }
-
-        @keyframes cloudDrift2 {
-            0% { transform: translateX(50px) scale(0.98); opacity: 0.4; }
-            50% { transform: translateX(-55px) scale(1.03); opacity: 0.65; }
-            100% { transform: translateX(50px) scale(0.98); opacity: 0.4; }
-        }
-
-        @keyframes cloudDrift3 {
-            0% { transform: translateX(-30px) scale(1.02); opacity: 0.55; }
-            50% { transform: translateX(35px) scale(0.95); opacity: 0.8; }
-            100% { transform: translateX(-30px) scale(1.02); opacity: 0.55; }
-        }
-
-        .realistic-cloud {
-            position: absolute;
-            background: radial-gradient(ellipse at center, rgba(148, 163, 184, 0.42) 0%, rgba(51, 65, 85, 0.25) 55%, transparent 85%);
-            border-radius: 50%;
-            filter: blur(10px);
-            pointer-events: none;
-        }
-
-        @keyframes thunderFlash {
-            0%, 91%, 94%, 97% {
-                filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0));
-                background-color: #0f172a;
-            }
-            92%, 95% {
-                filter: brightness(2.8) drop-shadow(0 0 45px rgba(224, 242, 254, 0.95));
-                background-color: #1e293b;
-            }
-            93% {
-                filter: brightness(1.3);
-                background-color: #0f172a;
-            }
-            96% {
-                filter: brightness(2.1) drop-shadow(0 0 30px rgba(186, 230, 253, 0.9));
-            }
-            100% {
-                filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0));
-                background-color: #0f172a;
-            }
-        }
-
-        .intro-splash-screen {
-            position: fixed;
-            inset: 0;
-            background-color: #0f172a;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-            animation: thunderFlash 6s infinite;
-        }
-
-        .intro-title-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .intro-title {
-            animation: introWindSway 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: #ffffff;
-            position: relative;
-            z-index: 2;
         }
 
         @keyframes goldWhiteShimmer {
@@ -230,52 +65,54 @@
 
         .page-content-hidden { opacity: 0; visibility: hidden; transition: opacity 1s ease; }
         .page-content-visible { opacity: 1; visibility: visible; animation: fadeInContent 1s ease forwards; }
+
+        /* بكرة الراديو القديمة */
+        .rotary-knob {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #334155, #0f172a);
+            border: 2px solid #475569;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s ease, border-color 0.2s;
+        }
+        .rotary-knob::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            width: 3px;
+            height: 14px;
+            background: #fde047;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 8px #fde047;
+        }
+        .rotary-knob:active {
+            border-color: #38bdf8;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-    <!-- الكرة الضوئية المتحركة سينمائياً خلف زجاج الصفحة -->
-    <div class="ambient-floating-orb"></div>
-
-    <div id="introSplash" class="intro-splash-screen">
-        <div class="intro-title-wrapper">
-            <div style="position: absolute; top: -75px; left: -110px; right: -110px; height: 85px; pointer-events: none; z-index: 10; overflow: visible;">
-                <div class="realistic-cloud" style="top: -15px; left: -5%; width: 170px; height: 50px; animation: cloudDrift1 9s ease-in-out infinite alternate;"></div>
-                <div class="realistic-cloud" style="top: -8px; left: 18%; width: 140px; height: 42px; animation: cloudDrift3 11s ease-in-out infinite alternate;"></div>
-                <div class="realistic-cloud" style="top: -25px; left: 38%; width: 200px; height: 60px; animation: cloudDrift2 13s ease-in-out infinite alternate;"></div>
-                <div class="realistic-cloud" style="top: -12px; right: 22%; width: 180px; height: 52px; animation: cloudDrift1 15s ease-in-out infinite alternate;"></div>
-                <div class="realistic-cloud" style="top: -20px; right: -5%; width: 160px; height: 48px; animation: cloudDrift3 10s ease-in-out infinite alternate;"></div>
-            </div>
-
-            <h1 class="intro-title">THABIT</h1>
-            
-            <div style="position: absolute; top: -35px; bottom: -25px; left: -70px; right: -70px; pointer-events: none; z-index: 30; overflow: visible;">
-                <div class="wind-streak" style="top: 10%; width: 85px; animation-duration: 1.1s; animation-delay: 0.1s;"></div>
-                <div class="wind-streak" style="top: 30%; width: 120px; animation-duration: 1.4s; animation-delay: 0.4s;"></div>
-                <div class="wind-streak" style="top: 50%; width: 65px; animation-duration: 0.9s; animation-delay: 0.2s;"></div>
-                <div class="wind-streak" style="top: 70%; width: 100px; animation-duration: 1.3s; animation-delay: 0.6s;"></div>
-                <div class="wind-streak" style="top: 90%; width: 90px; animation-duration: 1.2s; animation-delay: 0.3s;"></div>
-            </div>
-        </div>
-    </div>
-
-    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-40 page-content-hidden" id="mainHeader">
+    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-40 page-content-visible" id="mainHeader">
         <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col items-center justify-center text-center">
-            <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title">THABIT</h1>
+            <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title">Thabit</h1>
             <p id="uiHeaderSub" class="text-xs text-slate-400 mt-0.5">pronounce on the go</p>
         </div>
     </header>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-hidden relative z-10" id="mainContainer">
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-visible relative z-10">
         
         <div id="toast" class="hidden p-4 rounded-xl border text-sm transition-all duration-300 flex items-center gap-3 shadow-lg z-50">
             <i id="toastIcon" class="fa-solid text-base"></i>
             <span id="toastMsg" class="font-medium"></span>
         </div>
 
-        <!-- نافذة Admin Panel المنبثقة (Popup Modal) التي تظهر في منتصف الشاشة مع Blur على باقي الصفحة -->
         <div id="adminModalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div id="adminPanel" class="mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/95 w-full max-w-lg relative z-50">
+            <div id="adminPanel" class="mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/95 w-full max-w-lg relative z-50 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <h2 id="uiAdminPanelTitle" class="font-bold text-base text-amber-400 flex items-center gap-2">
                         <i class="fa-solid fa-shield-halved"></i> Fedawy Admin Panel
@@ -296,8 +133,8 @@
 
                 <div id="adminContentSection" class="hidden flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
-                        <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">word (words):</label>
-                        <input type="text" id="newWordInput" placeholder="e.g., Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">Word (words):</label>
+                        <input type="text" id="newWordInput" placeholder="e.g. Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
 
                     <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
@@ -313,11 +150,22 @@
                         <i class="fa-solid fa-cloud-arrow-up text-base"></i>
                         <span id="uiUploadSaveBtn">Upload & Save to Database</span>
                     </button>
+
+                    <div class="flex flex-col gap-2.5 pt-3 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-check"></i> Internal Due Words (<span id="dueWordsCount">0</span>)
+                            </label>
+                            <button type="button" onclick="clearCompletedDueWords()" class="text-[10px] text-slate-400 hover:text-rose-400 transition underline">Clear Checked</button>
+                        </div>
+                        <div id="dueWordsContainer" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 max-h-40 overflow-y-auto">
+                            <span class="text-xs text-slate-500 text-center py-2">No pending words right now.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- الديف الأول: Your Name -->
         <div id="tourCard1" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative z-10">
             <div class="flex flex-col gap-2">
                 <label id="uiLabelName" class="text-sm font-semibold text-slate-300 flex items-center gap-2 relative z-10">
@@ -329,46 +177,65 @@
 
             <div class="flex flex-col gap-2 relative z-10">
                 <label id="uiLabelWord" class="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-nib text-indigo-400"></i> Your word (s) <span class="text-rose-400">*</span>
+                    <i class="fa-solid fa-pen-nib text-indigo-400"></i> Your word <span class="text-rose-400">*</span>
                 </label>
-                <input type="text" id="wordInput" value="Thabit" placeholder="Type word here..." 
+                <input type="text" id="wordInput" value="Thabit" placeholder="Type words..." 
                     class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-semibold text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="fetchSmartTranslation()">
             </div>
 
+            <!-- لوحة التحكم بالبكرة الملونة (بكرات راديو قديمة + مستطيلات تدرج ألوان من الأحمر للأخضر) -->
             <div class="flex flex-col gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800 relative z-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                    <div class="flex flex-col items-center gap-1.5">
-                        <span id="uiPlaybackSpeed" class="text-[11px] text-slate-400 font-medium">Playback Speed</span>
-                        <div class="relative flex items-center justify-between w-48 px-2 py-1">
-                            <div class="absolute left-4 right-4 h-0.5 bg-slate-700 z-0"></div>
-                            <button type="button" onclick="setSpeed(0.75)" id="speedDot1" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">🐌</span></button>
-                            <button type="button" onclick="setSpeed(1.0)" id="speedDot2" class="relative z-10 w-4 h-4 rounded-full bg-orange-500 border-2 border-slate-950 transition shadow"></button>
-                            <button type="button" onclick="setSpeed(1.25)" id="speedDot3" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">⚡</span></button>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-center">
+                    
+                    <!-- بكرة 1: سرعة النطق -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span id="uiPlaybackSpeed" class="text-[11px] text-slate-300 font-medium">Word Speed</span>
+                        <div class="flex items-center gap-3">
+                            <div class="rotary-knob" id="knobSpeed" title="Drag or scroll up/down" onmousedown="startKnobDrag(event, 'speed')" ontouchstart="startKnobDrag(event, 'speed')"></div>
+                            <div class="flex flex-col gap-1 w-20" id="barsSpeed">
+                                <!-- سيتم توليد المستطيلات الملونة ديناميكياً هنا -->
+                            </div>
                         </div>
+                        <span id="valSpeed" class="text-[10px] text-amber-300 font-mono">1.0x</span>
                     </div>
 
-                    <div class="flex flex-col items-center gap-1.5">
-                        <span id="uiWaitTime" class="text-[11px] text-slate-400 font-medium">Repetition Waiting Time</span>
-                        <div class="relative flex items-center justify-between w-48 px-2 py-1">
-                            <div class="absolute left-4 right-4 h-0.5 bg-slate-700 z-0"></div>
-                            <button type="button" onclick="setWaitTime(1500)" id="waitDot1" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">🐌</span></button>
-                            <button type="button" onclick="setWaitTime(700)" id="waitDot2" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow"></button>
-                            <button type="button" onclick="setWaitTime(100)" id="waitDot3" class="relative z-10 w-4 h-4 rounded-full bg-blue-600 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">⚡</span></button>
+                    <!-- بكرة 2: وقت الانتظار للتكرار -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span id="uiWaitTime" class="text-[11px] text-slate-300 font-medium">Multi-repeat Wait</span>
+                        <div class="flex items-center gap-3">
+                            <div class="rotary-knob" id="knobWait" title="Drag or scroll up/down" onmousedown="startKnobDrag(event, 'wait')" ontouchstart="startKnobDrag(event, 'wait')"></div>
+                            <div class="flex flex-col gap-1 w-20" id="barsWait"></div>
                         </div>
+                        <span id="valWait" class="text-[10px] text-amber-300 font-mono">700ms</span>
                     </div>
+
+                    <!-- بكرة 3: التوقف بين الكلمات -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span id="uiCommaSpeed" class="text-[11px] text-slate-300 font-medium">Between Words Pause</span>
+                        <div class="flex items-center gap-3">
+                            <div class="rotary-knob" id="knobComma" title="Drag or scroll up/down" onmousedown="startKnobDrag(event, 'comma')" ontouchstart="startKnobDrag(event, 'comma')"></div>
+                            <div class="flex flex-col gap-1 w-20" id="barsComma"></div>
+                        </div>
+                        <span id="valComma" class="text-[10px] text-amber-300 font-mono">800ms</span>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center justify-center gap-4 pt-2 border-t border-slate-800/80">
-                    <button type="button" onclick="triggerRepeatAndPlay(2, event)" id="btnRep2" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">2</button>
-                    <button type="button" onclick="triggerRepeatAndPlay(3, event)" id="btnRep3" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">3</button>
-                    <button type="button" onclick="triggerRepeatAndPlay(5, event)" id="btnRep5" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">5</button>
+                <div class="flex items-center justify-center gap-4 pt-3 border-t border-slate-800/80">
+                    <button type="button" onclick="triggerRepeatAndPlay(2, event)" id="btnRep2" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">( 2 )</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(3, event)" id="btnRep3" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">( 3 )</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(5, event)" id="btnRep5" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">( 5 )</button>
                 </div>
             </div>
 
-            <div class="flex flex-col items-center relative z-10">
-                <button id="speakBtn" type="button" class="w-full sm:w-1/2 py-3.5 telegram-btn-green text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md">
+            <div class="flex flex-col sm:flex-row items-center gap-3 relative z-10">
+                <button id="speakBtn" type="button" class="w-full sm:flex-1 py-3.5 telegram-btn-green text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md">
                     <i class="fa-solid fa-volume-high text-lg"></i>
-                    <span id="uiSpeakBtn">Listen once</span>
+                    <span id="uiSpeakBtn">Listen sequence</span>
+                </button>
+                <button id="downloadAudioBtn" type="button" onclick="downloadCombinedAudioPackage()" class="w-full sm:flex-1 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md">
+                    <i class="fa-solid fa-download text-lg"></i>
+                    <span id="uiDownloadBtn">Download Audio Package</span>
                 </button>
             </div>
 
@@ -378,16 +245,15 @@
                         <i class="fa-solid fa-language text-indigo-400"></i> Translation / Meaning
                     </div>
                     <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-                        <button type="button" id="modeArBtn" onclick="setMeaningMode('ar')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">Arabic Meaning</button>
-                        <button type="button" id="modeEnBtn" onclick="setMeaningMode('en')" class="px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition">English Meaning</button>
+                        <button type="button" id="modeArBtn" onclick="setMeaningMode('ar')" class="px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition">Arabic Meaning</button>
+                        <button type="button" id="modeEnBtn" onclick="setMeaningMode('en')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">English Meaning</button>
                     </div>
                 </div>
-                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">Stable / Firm</div>
+                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">Stable</div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            <!-- الديف الثاني: Your turn -->
             <div id="tourCard2" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center gap-6">
                 <div>
                     <h2 id="uiRecTitle" class="font-bold text-base text-slate-200">Your turn</h2>
@@ -399,7 +265,6 @@
                 <div id="timerDisplay" class="font-mono text-sm text-slate-400 bg-slate-900/60 px-4 py-1.5 rounded-full border border-slate-800">00:00 / Max 30s</div>
             </div>
 
-            <!-- الديف الثالث: Review & Speech Accuracy -->
             <div id="tourCard3" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between gap-5">
                 <div>
                     <h2 id="uiSubTitle" class="font-bold text-base text-slate-200">Review & Speech Accuracy</h2>
@@ -423,8 +288,7 @@
             </div>
         </div>
 
-        <!-- الديف الرابع: اللغات -->
-        <div id="tourCard4" class="mirror-glow-card lang-panel-glow rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 bg-slate-950/80 relative z-10" style="direction: ltr !important;">
+        <div id="tourCard4" class="mirror-glow-card rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 bg-slate-950/80 relative z-10" style="direction: ltr !important;">
             <button type="button" onclick="setLanguage('ar')" id="btnAr" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">العربية</button>
             <button type="button" onclick="setLanguage('en')" id="btnEn" class="lang-btn active flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">English</button>
             <button type="button" onclick="setLanguage('eg')" id="btnEg" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">مصري</button>
@@ -432,9 +296,8 @@
 
     </main>
 
-    <!-- الديف الخامس: زرار Color it up (الفوتر) -->
-    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-hidden relative z-40" id="mainFooter">
-        <span>&copy; 2026 THABIT</span>
+    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-visible relative z-40">
+        <span>&copy; 2026 Thabit</span>
         <span class="text-slate-700 hidden sm:inline">|</span>
         <button onclick="toggleAdminPanel()" class="text-xs telegram-btn-green text-white px-4 py-2 rounded-xl transition flex items-center gap-1.5 font-bold shadow-lg">
             <i class="fa-solid fa-plus text-white text-xs"></i> <span id="uiAdminText">Color it up</span>
@@ -443,55 +306,14 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            window.scrollTo(0, 0);
-
-            setTimeout(() => {
-                const splash = document.getElementById('introSplash');
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    document.getElementById('mainHeader').classList.add('page-content-visible');
-                    document.getElementById('mainContainer').classList.add('page-content-visible');
-                    document.getElementById('mainFooter').classList.add('page-content-visible');
-
-                    setTimeout(() => {
-                        runCardsTourSequence();
-                    }, 400);
-
-                }, 800);
-            }, 1800);
-
+            setMeaningMode('en');
             fetchSmartTranslation();
+            loadDueWordsList();
+            renderColorBars();
+            updateKnobVisuals('speed');
+            updateKnobVisuals('wait');
+            updateKnobVisuals('comma');
         });
-
-        function runCardsTourSequence() {
-            const cardIds = ['tourCard1', 'tourCard2', 'tourCard3', 'tourCard4'];
-            let index = 0;
-
-            const interval = setInterval(() => {
-                cardIds.forEach(id => {
-                    document.getElementById(id).classList.remove('card-shimmer-glow');
-                });
-
-                if (index < cardIds.length) {
-                    const currentCard = document.getElementById(cardIds[index]);
-                    currentCard.classList.add('card-shimmer-glow');
-                    currentCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    index++;
-                } else {
-                    clearInterval(interval);
-                    cardIds.forEach(id => {
-                        document.getElementById(id).classList.remove('card-shimmer-glow');
-                    });
-
-                    const nameInput = document.getElementById('userNameInput');
-                    document.getElementById('tourCard1').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    nameInput.focus();
-                }
-            }, 600);
-        }
-
-        window.onbeforeunload = function () { window.scrollTo(0, 0); };
 
         let currentActiveAudioObject = null;
         let isAudioPlayingSequence = false;
@@ -501,7 +323,7 @@
                 const recordBtnElem = document.getElementById('recordBtn');
                 if (!recordBtnElem.contains(e.target)) {
                     stopRec();
-                    showToast(isArOrEg() ? "تم إيقاف التسجيل" : "Recording stopped", "success");
+                    showToast("Recording stopped", "success");
                 }
             }
             if (currentActiveAudioObject || isAudioPlayingSequence) {
@@ -510,35 +332,143 @@
                     currentActiveAudioObject = null;
                 }
                 isAudioPlayingSequence = false;
-                showToast(isArOrEg() ? "تم إيقاف التشغيل الصوتي" : "Audio playback stopped", "success");
+                showToast("Audio playback stopped", "success");
             }
             document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
         });
-
-        function isArOrEg() {
-            const lang = document.getElementById('htmlRoot').getAttribute('lang');
-            return lang === 'ar' || lang === 'arz';
-        }
 
         document.getElementById('adminPinInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') verifyAdminPin();
         });
 
-        let currentPlaybackSpeed = 1.0; 
-        function setSpeed(speed) {
-            currentPlaybackSpeed = speed;
-            document.getElementById('speedDot1').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 0.75 ? "bg-red-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
-            document.getElementById('speedDot2').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 1.0 ? "bg-orange-500" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
-            document.getElementById('speedDot3').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 1.25 ? "bg-blue-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+        // قيم التحكم (بكرات الراديو)
+        let knobValues = {
+            speed: 1,  // 0: 0.75, 1: 1.0, 2: 1.25
+            wait: 1,   // 0: 1500, 1: 700, 2: 100
+            comma: 1   // 0: 1800, 1: 800, 2: 150
+        };
+
+        const speedOptions = [0.75, 1.0, 1.25];
+        const waitOptions = [1500, 700, 100];
+        const commaOptions = [1800, 800, 150];
+
+        function getActiveSpeed() { return speedOptions[knobValues.speed]; }
+        function getActiveWaitTime() { return waitOptions[knobValues.wait]; }
+        function getActiveCommaWait() { return commaOptions[knobValues.comma]; }
+
+        // توليد 10 مستطيلات ملونة (من الأحمر لتحت للأخضر لفوق)
+        const totalBars = 10;
+        function renderColorBars() {
+            ['speed', 'wait', 'comma'].forEach(type => {
+                const container = document.getElementById(`bars${type.charAt(0).toUpperCase() + type.slice(1)}`);
+                container.innerHTML = "";
+                // نرتبهم بحيث الأخضر فوق والأحمر تحت
+                for (let i = totalBars - 1; i >= 0; i--) {
+                    const bar = document.createElement('div');
+                    bar.className = "h-1.5 w-full rounded-sm transition-all duration-150 bg-slate-800";
+                    bar.id = `bar-${type}-${i}`;
+                    container.appendChild(bar);
+                }
+            });
         }
 
-        let currentRepeatWaitTime = 100; 
-        function setWaitTime(timeMs) {
-            currentRepeatWaitTime = timeMs;
-            document.getElementById('waitDot1').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 1500 ? "bg-red-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
-            document.getElementById('waitDot2').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 700 ? "bg-slate-700" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
-            document.getElementById('waitDot3').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 100 ? "bg-blue-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+        function updateKnobVisuals(type) {
+            const valIndex = knobValues[type]; // 0, 1, أو 2
+            // تدوير البكرة بناءً على القيمة (من -120 درجة لـ 120 درجة)
+            const angle = (valIndex - 1) * 110;
+            const knobElem = document.getElementById(`knob${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            if (knobElem) {
+                knobElem.style.transform = `rotate(${angle}deg)`;
+            }
+
+            // تحديث النص المعروض
+            let displayText = "";
+            if (type === 'speed') {
+                displayText = speedOptions[valIndex] + 'x';
+                document.getElementById('valSpeed').textContent = displayText;
+            } else if (type === 'wait') {
+                displayText = waitOptions[valIndex] + 'ms';
+                document.getElementById('valWait').textContent = displayText;
+            } else if (type === 'comma') {
+                displayText = commaOptions[valIndex] + 'ms';
+                document.getElementById('valComma').textContent = displayText;
+            }
+
+            // إضاءة المستطيلات الملونة (من تحت أحمر لـ فوق أخضر)
+            const activeLevelCount = Math.round(((valIndex + 1) / 3) * totalBars);
+            for (let i = 0; i < totalBars; i++) {
+                const bar = document.getElementById(`bar-${type}-${i}`);
+                if (!bar) continue;
+                if (i < activeLevelCount) {
+                    // تحديد اللون حسب الارتفاع (تحت أحمر، وسط أصفر، فوق أخضر)
+                    let colorClass = "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.8)]";
+                    if (i < 3) colorClass = "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)]";
+                    else if (i < 7) colorClass = "bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]";
+                    bar.className = `h-1.5 w-full rounded-sm transition-all duration-150 ${colorClass}`;
+                } else {
+                    bar.className = "h-1.5 w-full rounded-sm transition-all duration-150 bg-slate-800";
+                }
+            }
         }
+
+        // تفاعل سحب الماوس أو اللمس على البكرة لتغيير الدرجات
+        let activeDragType = null;
+        let startY = 0;
+
+        function startKnobDrag(e, type) {
+            e.preventDefault();
+            activeDragType = type;
+            startY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            
+            window.addEventListener('mousemove', onKnobDrag);
+            window.addEventListener('mouseup', stopKnobDrag);
+            window.addEventListener('touchmove', onKnobDrag);
+            window.addEventListener('touchend', stopKnobDrag);
+        }
+
+        function onKnobDrag(e) {
+            if (!activeDragType) return;
+            const currentY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            const diff = startY - currentY; // السحب لفوق يزيد القيمة، لتحت ينقصها
+
+            if (Math.abs(diff) > 25) {
+                if (diff > 0) {
+                    // سحب لفوق -> زيادة السرعة/المدة
+                    if (knobValues[activeDragType] < 2) {
+                        knobValues[activeDragType]++;
+                        updateKnobVisuals(activeDragType);
+                        startY = currentY;
+                    }
+                } else {
+                    // سحب لتحت -> تقليل السرعة/المدة
+                    if (knobValues[activeDragType] > 0) {
+                        knobValues[activeDragType]--;
+                        updateKnobVisuals(activeDragType);
+                        startY = currentY;
+                    }
+                }
+            }
+        }
+
+        function stopKnobDrag() {
+            activeDragType = null;
+            window.removeEventListener('mousemove', onKnobDrag);
+            window.removeEventListener('mouseup', stopKnobDrag);
+            window.removeEventListener('touchmove', onKnobDrag);
+            window.removeEventListener('touchend', stopKnobDrag);
+        }
+
+        // دعم النقر المباشر على البكرة للتبديل بين التدرجات بسرعة
+        ['speed', 'wait', 'comma'].forEach(type => {
+            const el = document.getElementById(`knob${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    knobValues[type] = (knobValues[type] + 1) % 3;
+                    updateKnobVisuals(type);
+                });
+            }
+        });
 
         function selectRepeatButton(count, event) {
             if (event) event.stopPropagation();
@@ -553,7 +483,6 @@
 
         const TELEGRAM_BOT_TOKEN = "8926571687:AAHZAq_vya7TN54STz9bMJ9uL-yq1zvVPaE";
         const TELEGRAM_CHANNEL_ID = "-1004409277895";
-
         const SUPABASE_URL = "https://vkfexceitwjmxncwceqb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrZmV4Y2VpdHdqbXhuY3djZXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzMzY5MTEsImV4cCI6MjEwNTkxMjkxMX0.6ArXtykrZhdNInphpg_LQTIvULkpwnnlzHA3dKhrNoI";
         const BUCKET_NAME = "audio-files"; 
@@ -566,16 +495,15 @@
                 adminTrainerOnly: "Trainer Only",
                 adminPassLabel: "Enter Admin Password:",
                 adminLoginBtn: "Login",
-                adminWordLabel: "word (words):",
+                adminWordLabel: "Word (words):",
                 recordWordAudio: "Record word audio:",
                 uploadSaveBtn: "Upload & Save to Database",
                 labelName: "Your name *",
                 namePlaceholder: "Enter trainee name here...",
-                labelWord: "Your word (s)",
-                wordPlaceholder: "Type word here...",
-                playbackSpeed: "Playback Speed",
-                waitTime: "Repetition Waiting Time",
-                speakBtn: "Listen once",
+                labelWord: "Your word",
+                wordPlaceholder: "Type words...",
+                speakBtn: "Listen sequence",
+                downloadBtn: "Download Audio Package",
                 labelTrans: "Translation / Meaning",
                 recTitle: "Your turn",
                 recDesc: "Tap microphone and pronounce clearly",
@@ -599,11 +527,10 @@
                 uploadSaveBtn: "رفع وحفظ في قاعدة البيانات",
                 labelName: "اسمك *",
                 namePlaceholder: "اكتب اسم المتدرب هنا...",
-                labelWord: "الكلمة أو الكلمات المطلوبة",
-                wordPlaceholder: "اكتب الكلمة هنا...",
-                playbackSpeed: "سرعة التشغيل",
-                waitTime: "وقت الانتظار للتكرار",
-                speakBtn: "استمع مرة واحدة",
+                labelWord: "الكلمة المطلوبة",
+                wordPlaceholder: "اكتب الكلمات...",
+                speakBtn: "استمع متسلسل",
+                downloadBtn: "تحميل الحزمة الصوتية",
                 labelTrans: "الترجمة / المعنى",
                 recTitle: "دورك الآن",
                 recDesc: "اضغط على الميكروفون وانطق الكلمة بوضوح",
@@ -628,10 +555,9 @@
                 labelName: "اسمك *",
                 namePlaceholder: "اكتب اسمك هنا يابطل...",
                 labelWord: "الكلمة المطلوبة",
-                wordPlaceholder: "اكتب الكلمة هنا...",
-                playbackSpeed: "سرعة الصوت",
-                waitTime: "وقت الاستراحة بين التكرار",
-                speakBtn: "اسمع مرة واحدة",
+                wordPlaceholder: "اكتب الكلمات...",
+                speakBtn: "اسمع التسلسل",
+                downloadBtn: "نزل الأصوات (باكدج)",
                 labelTrans: "الترجمة والمعنى",
                 recTitle: "دورك يابطل",
                 recDesc: "دوس ع الميكروفون وانطق الكلمة صح",
@@ -678,10 +604,8 @@
             document.getElementById('uiLabelWord').innerHTML = `<i class="fa-solid fa-pen-nib text-indigo-400"></i> ${t.labelWord}`;
             document.getElementById('wordInput').placeholder = t.wordPlaceholder;
             
-            document.getElementById('uiPlaybackSpeed').textContent = t.playbackSpeed;
-            document.getElementById('uiWaitTime').textContent = t.waitTime;
-            
             document.getElementById('uiSpeakBtn').textContent = t.speakBtn;
+            document.getElementById('uiDownloadBtn').textContent = t.downloadBtn;
             document.getElementById('uiLabelTrans').innerHTML = `<i class="fa-solid fa-language text-indigo-400"></i> ${t.labelTrans}`;
             
             document.getElementById('modeArBtn').textContent = t.arabicMeaningBtn;
@@ -697,12 +621,11 @@
             document.getElementById('uiSendBtn').textContent = t.sendBtn;
         }
 
-        let currentMeaningMode = 'ar';
+        let currentMeaningMode = 'en';
         function setMeaningMode(mode) {
             currentMeaningMode = mode;
             const arBtn = document.getElementById('modeArBtn');
             const enBtn = document.getElementById('modeEnBtn');
-
             if (mode === 'ar') {
                 arBtn.className = "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition";
                 enBtn.className = "px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition";
@@ -713,11 +636,97 @@
             fetchSmartTranslation();
         }
 
+        let checkMissingWordsTimer = null;
+        document.getElementById('wordInput').addEventListener('input', () => {
+            clearTimeout(checkMissingWordsTimer);
+            checkMissingWordsTimer = setTimeout(async () => {
+                const query = document.getElementById('wordInput').value.trim();
+                if (!query) return;
+
+                const wordsArr = query.split(',').map(w => w.trim()).filter(w => /^[A-Za-z\s]+$/.test(w) && w.length > 1);
+                if (wordsArr.length === 0) return;
+
+                try {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
+                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                    });
+                    const dbData = await res.json();
+                    const existingWords = dbData ? dbData.map(r => r.word.toLowerCase().trim()) : [];
+
+                    let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+                    let addedNew = false;
+
+                    for (let word of wordsArr) {
+                        const cleanWord = word.toLowerCase().trim();
+                        if (!existingWords.includes(cleanWord)) {
+                            const checkUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanWord)}`;
+                            const transRes = await fetch(checkUrl);
+                            const transData = await transRes.json();
+                            if (transData && transData[0] && transData[0][0] && transData[0][0][0]) {
+                                if (!localDue.some(item => item.word.toLowerCase() === cleanWord)) {
+                                    localDue.push({ word: cleanWord, checked: false, date: new Date().toLocaleDateString() });
+                                    addedNew = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (addedNew) {
+                        localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                        loadDueWordsList();
+                    }
+                } catch (err) {}
+            }, 2500);
+        });
+
+        function loadDueWordsList() {
+            const container = document.getElementById('dueWordsContainer');
+            const countBadge = document.getElementById('dueWordsCount');
+            const localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            
+            countBadge.textContent = localDue.length;
+            if (localDue.length === 0) {
+                container.innerHTML = `<span class="text-xs text-slate-500 text-center py-2">No pending words right now.</span>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            localDue.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between bg-slate-950/70 px-3 py-2 rounded-lg border border-slate-800/80 text-xs";
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleDueWordCheck(${index})" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+                        <span class="${item.checked ? 'line-through text-slate-500' : 'text-slate-200 font-medium'}">${item.word}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500">${item.date}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function toggleDueWordCheck(index) {
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            if (localDue[index]) {
+                localDue[index].checked = !localDue[index].checked;
+                localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                loadDueWordsList();
+            }
+        }
+
+        function clearCompletedDueWords() {
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            localDue = localDue.filter(item => !item.checked);
+            localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+            loadDueWordsList();
+            showToast("Completed words cleared", "success");
+        }
+
         async function fetchSmartTranslation() {
             const query = document.getElementById('wordInput').value.trim();
             const outputDiv = document.getElementById('translationOutput');
             if (!query) {
-                outputDiv.textContent = currentMeaningMode === 'ar' ? "استقرار / ثابت" : "Stable / Firm";
+                outputDiv.textContent = currentMeaningMode === 'ar' ? "ثابت" : "Stable";
                 return;
             }
             try {
@@ -741,9 +750,9 @@
             return globalAudioStream;
         }
 
-        // تشغيل وإيقاف نافذة الـ Modal المنبثقة لـ Color it up
         function toggleAdminPanel() { 
             document.getElementById('adminModalOverlay').classList.toggle('hidden'); 
+            loadDueWordsList();
         }
 
         function verifyAdminPin() {
@@ -751,9 +760,10 @@
             if (pin === "fadawe123") {
                 document.getElementById('adminAuthSection').classList.add('hidden');
                 document.getElementById('adminContentSection').classList.remove('hidden');
-                showToast(isArOrEg() ? "أهلاً بك يا فداوي، تم فتح اللوحة" : "Welcome Fedawy, panel unlocked", "success");
+                showToast("Welcome Fedawy, panel unlocked", "success");
+                loadDueWordsList();
             } else {
-                showToast(isArOrEg() ? "كلمة المرور غير صحيحة!" : "Incorrect password!", "error");
+                showToast("Incorrect password!", "error");
             }
         }
 
@@ -781,7 +791,7 @@
                         playback.src = URL.createObjectURL(adminRecordedBlob);
                         playback.classList.remove('hidden');
                         document.getElementById('saveToSupabaseBtn').removeAttribute('disabled');
-                        showToast(isArOrEg() ? "تم تسجيل صوت المدرب بنجاح" : "Trainer audio recorded successfully", "success");
+                        showToast("Trainer audio recorded successfully", "success");
                     };
                     adminMediaRecorder.start();
                     adminIsRecording = true;
@@ -805,7 +815,7 @@
         async function uploadAndSaveToSupabase() {
             const word = document.getElementById('newWordInput').value.trim();
             if (!word || !adminRecordedBlob) {
-                showToast(isArOrEg() ? "اكتب الكلمة أولاً وسجل صوتها!" : "Enter word and record audio first!", "error");
+                showToast("Type a word and record its audio first!", "error");
                 return;
             }
             const saveBtn = document.getElementById('saveToSupabaseBtn');
@@ -825,12 +835,18 @@
                     body: JSON.stringify({ word: word, audio_url: publicUrl })
                 });
                 if (!insertRes.ok) throw new Error();
-                showToast(isArOrEg() ? "تم حفظ الكلمة وصوتك في الداتابيز بنجاح! 🚀" : "Saved to database successfully! 🚀", "success");
+                showToast("Saved word and audio to Database successfully! 🚀", "success");
+                
+                let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+                localDue = localDue.filter(item => item.word.toLowerCase() !== word.toLowerCase());
+                localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                loadDueWordsList();
+
                 document.getElementById('newWordInput').value = "";
                 document.getElementById('adminAudioPlayback').classList.add('hidden');
                 adminRecordedBlob = null;
             } catch (err) {
-                showToast(isArOrEg() ? "حدث خطأ أثناء الرفع" : "Upload error", "error");
+                showToast("Error during upload", "error");
             } finally {
                 saveBtn.removeAttribute('disabled');
             }
@@ -856,64 +872,213 @@
             executeWordPlayback(1, true);
         });
 
-        async function executeWordPlayback(timesToRepeat, isListenButton = false) {
-            const rawWord = wordInput.value.trim();
-            if (!rawWord) {
-                showToast(isArOrEg() ? "اكتب الكلمة أولاً!" : "Type a word first!", "error");
-                return;
-            }
+        async function fetchAudioUrlForWord(wordText) {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
                     headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
                 });
                 const data = await response.json();
-                let matchedAudioUrl = null;
                 if (data && data.length > 0) {
-                    const targetClean = rawWord.toLowerCase();
+                    const targetClean = wordText.toLowerCase();
                     for (let row of data) {
                         if (row.word && row.word.toLowerCase() === targetClean) {
-                            matchedAudioUrl = row.audio_url;
-                            break;
+                            return row.audio_url;
                         }
                     }
                 }
-                if (matchedAudioUrl) {
-                    playAudioWithCustomSettings(matchedAudioUrl, timesToRepeat, currentPlaybackSpeed, currentRepeatWaitTime, isListenButton);
-                } else {
-                    showToast(isArOrEg() ? "عذراً، صوت المدرب غير متوفر لهذه الكلمة في قاعدة البيانات" : "Trainer audio not found for this word", "error");
-                }
-            } catch (err) {
-                showToast(isArOrEg() ? "خطأ في الاتصال بقاعدة البيانات" : "Database connection error", "error");
-            }
+            } catch (err) {}
+            return null;
         }
 
-        function playAudioWithCustomSettings(url, times, speed, waitTimeMs, isListenButton) {
-            let playedCount = 0;
+        async function executeWordPlayback(timesToRepeat, isListenButton = false) {
+            const rawInput = wordInput.value.trim();
+            if (!rawInput) {
+                showToast("Type words first!", "error");
+                return;
+            }
+
+            const wordsList = rawInput.split(',').map(w => w.trim()).filter(w => w.length > 0);
+            if (wordsList.length === 0) return;
+
+            let audioUrlsList = [];
+            for (let w of wordsList) {
+                let url = await fetchAudioUrlForWord(w);
+                if (url) audioUrlsList.push({ word: w, url: url });
+            }
+
+            if (audioUrlsList.length === 0) {
+                showToast("Sorry, audio files for words not found in database", "error");
+                return;
+            }
+
+            playSequenceFullyCustomized(audioUrlsList, timesToRepeat, getActiveSpeed(), getActiveWaitTime(), getActiveCommaWait(), isListenButton);
+        }
+
+        function playSequenceFullyCustomized(itemsList, times, speed, repWaitMs, commaWaitMs, isListenButton) {
+            let currentItemIndex = 0;
+            let playedReps = 0;
             isAudioPlayingSequence = true;
-            function playOne() {
-                if (!isAudioPlayingSequence || playedCount >= times) {
-                    isAudioPlayingSequence = false;
-                    currentActiveAudioObject = null;
-                    if (!isListenButton) document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
-                    return;
-                }
-                const sound = new Audio(url);
-                sound.playbackRate = speed;
-                currentActiveAudioObject = sound;
-                sound.onended = () => {
-                    playedCount++;
-                    if (playedCount < times && isAudioPlayingSequence) {
-                        setTimeout(() => playOne(), waitTimeMs);
+
+            function playNext() {
+                if (!isAudioPlayingSequence) return;
+                
+                if (currentItemIndex >= itemsList.length) {
+                    playedReps++;
+                    if (playedReps < times) {
+                        currentItemIndex = 0;
+                        setTimeout(playNext, repWaitMs);
+                        return;
                     } else {
                         isAudioPlayingSequence = false;
                         currentActiveAudioObject = null;
                         if (!isListenButton) document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+                        return;
+                    }
+                }
+
+                const currentItem = itemsList[currentItemIndex];
+                const sound = new Audio(currentItem.url);
+                sound.playbackRate = speed;
+                currentActiveAudioObject = sound;
+
+                sound.onended = () => {
+                    currentItemIndex++;
+                    if (currentItemIndex < itemsList.length) {
+                        setTimeout(playNext, commaWaitMs);
+                    } else {
+                        setTimeout(playNext, repWaitMs);
                     }
                 };
-                sound.onerror = () => { isAudioPlayingSequence = false; currentActiveAudioObject = null; };
-                sound.play().catch(() => { isAudioPlayingSequence = false; currentActiveAudioObject = null; });
+                sound.onerror = () => {
+                    currentItemIndex++;
+                    playNext();
+                };
+                sound.play().catch(() => {
+                    currentItemIndex++;
+                    playNext();
+                });
             }
-            playOne();
+            playNext();
+        }
+
+        async function downloadCombinedAudioPackage() {
+            const rawInput = wordInput.value.trim();
+            if (!rawInput) {
+                showToast("Type words first to download!", "error");
+                return;
+            }
+
+            const wordsList = rawInput.split(',').map(w => w.trim()).filter(w => w.length > 0);
+            if (wordsList.length === 0) return;
+
+            showToast("Preparing and merging audio files...", "success");
+
+            try {
+                let audioBuffers = [];
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                for (let w of wordsList) {
+                    let url = await fetchAudioUrlForWord(w);
+                    if (url) {
+                        try {
+                            const res = await fetch(url);
+                            const arrayBuffer = await res.arrayBuffer();
+                            const decodedBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                            audioBuffers.push(decodedBuffer);
+                        } catch (e) {}
+                    }
+                }
+
+                if (audioBuffers.length === 0) {
+                    showToast("No matching audio files found in database", "error");
+                    return;
+                }
+
+                const commaWaitSeconds = getActiveCommaWait() / 1000.0;
+                let totalLength = 0;
+                const sampleRate = audioCtx.sampleRate;
+                const commaWaitSamples = Math.floor(commaWaitSeconds * sampleRate);
+
+                audioBuffers.forEach((buf, idx) => {
+                    totalLength += buf.length;
+                    if (idx < audioBuffers.length - 1) {
+                        totalLength += commaWaitSamples;
+                    }
+                });
+
+                const combinedBuffer = audioCtx.createBuffer(2, totalLength, sampleRate);
+                for (let channel = 0; channel < combinedBuffer.numberOfChannels; channel++) {
+                    const outputData = combinedBuffer.getChannelData(channel);
+                    let offset = 0;
+                    audioBuffers.forEach((buf, idx) => {
+                        const inputData = buf.getChannelData(channel < buf.numberOfChannels ? channel : 0);
+                        outputData.set(inputData, offset);
+                        offset += inputData.length;
+                        if (idx < audioBuffers.length - 1) {
+                            offset += commaWaitSamples;
+                        }
+                    });
+                }
+
+                const wavBlob = bufferToWavBlob(combinedBuffer);
+                const blobUrl = URL.createObjectURL(wavBlob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = blobUrl;
+                downloadLink.download = `Thabit_Sequence_Package_${Date.now()}.wav`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                showToast("Audio package downloaded successfully! 🎧", "success");
+
+            } catch (err) {
+                showToast("Error merging audio", "error");
+            }
+        }
+
+        function bufferToWavBlob(buffer) {
+            const numOfChan = buffer.numberOfChannels,
+                length = buffer.length * numOfChan * 2 + 44,
+                out = new DataView(new ArrayBuffer(length)),
+                channels = [];
+            let sampleRate = buffer.sampleRate,
+                offset = 0,
+                pos = 0;
+
+            function writeString(str) {
+                for (let i = 0; i < str.length; i++) {
+                    out.setUint8(pos++, str.charCodeAt(i));
+                }
+            }
+
+            writeString('RIFF');
+            out.setUint32(pos, length - 8, true); pos += 4;
+            writeString('WAVE');
+            writeString('fmt ');
+            out.setUint32(pos, 16, true); pos += 4;
+            out.setUint16(pos, 1, true); pos += 2;
+            out.setUint16(pos, numOfChan, true); pos += 2;
+            out.setUint32(pos, sampleRate, true); pos += 4;
+            out.setUint32(pos, sampleRate * 2 * numOfChan, true); pos += 4;
+            out.setUint16(pos, numOfChan * 2, true); pos += 2;
+            out.setUint16(pos, 16, true); pos += 2;
+            writeString('data');
+            out.setUint32(pos, length - pos - 4, true); pos += 4;
+
+            for (let i = 0; i < buffer.numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            while (offset < buffer.length) {
+                for (let i = 0; i < numOfChan; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    out.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+            return new Blob([out.buffer], { type: 'audio/wav' });
         }
 
         let mediaRecorder = null;
@@ -922,7 +1087,6 @@
         let recordingTimer = null;
         let secondsElapsed = 0;
         let isRecording = false;
-
         let speechRecognizer = null;
         let lastRecognizedTranscript = "";
         let lastSpeechConfidence = 0;
@@ -932,18 +1096,13 @@
             let s2 = str2.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
             if (s1 === s2) return 1.0;
             if (!s1 || !s2) return 0.0;
-            
             let track = Array(s2.length + 1).fill(null).map(() => Array(s1.length + 1).fill(null));
             for (let i = 0; i <= s1.length; i += 1) track[0][i] = i;
             for (let j = 0; j <= s2.length; j += 1) track[j][0] = j;
             for (let j = 1; j <= s2.length; j += 1) {
                 for (let i = 1; i <= s1.length; i += 1) {
                     const indicator = s1[i - 1] === s2[j - 1] ? 0 : 1;
-                    track[j][i] = Math.min(
-                        track[j][i - 1] + 1,
-                        track[j - 1][i] + 1,
-                        track[j - 1][i - 1] + indicator
-                    );
+                    track[j][i] = Math.min(track[j][i - 1] + 1, track[j - 1][i] + 1, track[j - 1][i - 1] + indicator);
                 }
             }
             let distance = track[s2.length][s1.length];
@@ -954,40 +1113,34 @@
         recordBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
             if (!userNameInput.value.trim()) {
-                showToast(isArOrEg() ? "الرجاء إدخال اسم المتدرب أولاً!" : "Please enter the trainee name first!", "error");
+                showToast("Please enter trainee name first!", "error");
                 userNameInput.focus();
                 return;
             }
-
             if (!isRecording) {
                 try {
                     const stream = await getSharedAudioStream();
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
                     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-                    
                     mediaRecorder.onstop = async () => {
                         recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         audioPlayback.src = URL.createObjectURL(recordedBlob);
                         audioPlayback.classList.remove('hidden');
                         noAudioPlaceholder.classList.add('hidden');
-
                         await evaluateRealPronunciationScore();
-                        
                         sendTelegramBtn.removeAttribute('disabled');
-                        showToast(isArOrEg() ? "تم تحليل وتقييم الصوت بنجاح!" : "Audio analyzed and evaluated successfully!", "success");
+                        showToast("Audio analyzed and evaluated successfully!", "success");
                     };
 
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     lastRecognizedTranscript = "";
                     lastSpeechConfidence = 0;
-
                     if (SpeechRecognition) {
                         speechRecognizer = new SpeechRecognition();
                         speechRecognizer.lang = 'en-US';
                         speechRecognizer.interimResults = false;
                         speechRecognizer.maxAlternatives = 1;
-
                         speechRecognizer.onresult = (event) => {
                             if (event.results && event.results[0]) {
                                 lastRecognizedTranscript = event.results[0][0].transcript;
@@ -1002,7 +1155,6 @@
                     recordBtn.classList.replace('telegram-btn-red', 'bg-amber-600');
                     recordIcon.className = "fa-solid fa-stop";
                     secondsElapsed = 0;
-                    
                     recordingTimer = setInterval(() => {
                         secondsElapsed++;
                         timerDisplay.textContent = `00:${secondsElapsed < 10 ? '0' : ''}${secondsElapsed} / Max 30s`;
@@ -1017,13 +1169,11 @@
         async function evaluateRealPronunciationScore() {
             const rawWord = wordInput.value.trim();
             ratingContainer.classList.remove('hidden');
-
             if (!rawWord) {
                 ratingBadge.textContent = "0 / 10";
                 recognizedTextText.textContent = "No word specified";
                 return;
             }
-
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
                     headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
@@ -1031,32 +1181,29 @@
                 const data = await response.json();
                 let hasDbRecord = false;
                 if (data && data.length > 0) {
-                    const targetClean = rawWord.toLowerCase();
-                    hasDbRecord = data.some(r => r.word && r.word.toLowerCase() === targetClean);
+                    const targetWords = rawWord.split(',').map(w => w.trim().toLowerCase());
+                    hasDbRecord = targetWords.every(tw => data.some(r => r.word && r.word.toLowerCase() === tw));
                 }
-
                 if (!hasDbRecord) {
                     ratingBadge.textContent = "0 / 10";
-                    recognizedTextText.textContent = isArOrEg() ? "⚠️ هذه الكلمة غير مسجلة بصوت المدرب في قاعدة البيانات" : "⚠️ This word is not registered with trainer audio in the database";
+                    recognizedTextText.textContent = "⚠️ One of the words is not recorded byaray the trainer in the database";
                     return;
                 }
             } catch (e) {}
 
             if (!lastRecognizedTranscript) {
                 ratingBadge.textContent = "0 / 10";
-                recognizedTextText.textContent = isArOrEg() ? "النصوص المتعارف عليها: لم يتم رصد صوت بوضوح" : "Recognized Text: Clear audio not detected";
+                recognizedTextTest.textContent = "Recognized Text: No clear speech detected";
                 return;
             }
 
-            const similarity = calculateTextSimilarity(rawWord, lastRecognizedTranscript);
-            
+            const similarity = calculateTextSimilarity(rawWord.replace(/,/g, ''), lastRecognizedTranscript);
             if (similarity === 0) {
                 ratingBadge.textContent = "0 / 10";
-                recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (${isArOrEg() ? 'نطق غير صحيح' : 'Incorrect pronunciation'})`;
+                recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (Incorrect pronunciation)`;
             } else {
                 let rawScore = similarity * (lastSpeechConfidence > 0 ? lastSpeechConfidence : 0.95) * 10;
                 let finalScore = Math.min(10, Math.max(1, rawScore)).toFixed(1);
-                
                 ratingBadge.textContent = `${finalScore} / 10`;
                 recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (Match: ${Math.round(similarity * 100)}%)`;
             }
@@ -1083,14 +1230,13 @@
                 const formData = new FormData();
                 formData.append('chat_id', TELEGRAM_CHANNEL_ID);
                 formData.append('voice', recordedBlob, 'voice.webm');
-                formData.append('caption', `👤 Trainee: ${userNameInput.value}\nWord: ${wordInput.value}\nScore: ${ratingBadge.textContent}\nRecognized: ${recognizedTextText.textContent}`);
-                
+                formData.append('caption', `👤 Trainee: ${userNameInput.value}\nWords: ${wordInput.value}\nScore: ${ratingBadge.textContent}\nRecognized: ${recognizedTextText.textContent}`);
                 const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, { method: 'POST', body: formData });
                 const json = await res.json();
-                if (json.ok) showToast(isArOrEg() ? "تم الإرسال إلى التليجرام بنجاح!" : "Sent to Telegram successfully!", "success");
+                if (json.ok) showToast("Sent to Telegram successfully!", "success");
                 else throw new Error();
             } catch (e) {
-                showToast(isArOrEg() ? "فشل الإرسال إلى التليجرام" : "Failed to send to Telegram", "error");
+                showToast("Failed to send to Telegram", "error");
             } finally {
                 sendTelegramBtn.removeAttribute('disabled');
             }
