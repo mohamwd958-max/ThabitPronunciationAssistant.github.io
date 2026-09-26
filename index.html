@@ -1,1079 +1,1050 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" dir="ltr" id="htmlRoot" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THABIT - Pronunciation Trainer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tesseract.js للتعرف على النصوص من الصور -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@v5/dist/tesseract.min.js"></script>
-    <!-- خطوط جوجل الرسمية -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        html[lang="en"] body {
-            font-family: 'Inter', sans-serif;
-        }
-        html[lang="ar"] body {
-            font-family: 'Cairo', sans-serif;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        @keyframes smoothFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes intenseWhiteFlashOnly {
-            0% {
-                text-shadow: 0 0 45px rgba(255, 255, 255, 1), 0 0 80px rgba(255, 255, 255, 0.95), 0 0 110px rgba(234, 179, 8, 0.6);
-                filter: brightness(2.2);
-            }
-            50% {
-                text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 50px rgba(234, 179, 8, 0.7);
-                filter: brightness(1.5);
-            }
-            100% {
-                text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-                filter: brightness(1);
-            }
-        }
-
-        @keyframes mirrorBacklightMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        #pauseSlider {
-            -webkit-appearance: none;
-            appearance: none;
-            background: #1e293b;
-            height: 8px;
-            border-radius: 9999px;
-            outline: none;
-        }
-
-        #pauseSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        #pauseSlider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        #pauseSlider.thumb-blue::-webkit-slider-thumb {
-            background: #3b82f6;
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
-        }
-        #pauseSlider.thumb-blue::-moz-range-thumb {
-            background: #3b82f6;
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
-        }
-
-        #pauseSlider.thumb-yellow::-webkit-slider-thumb {
-            background: #eab308;
-            box-shadow: 0 0 12px rgba(234, 179, 8, 0.8);
-        }
-        #pauseSlider.thumb-yellow::-moz-range-thumb {
-            background: #eab308;
-            box-shadow: 0 0 12px rgba(234, 179, 8, 0.8);
-        }
-
-        #pauseSlider.thumb-green::-webkit-slider-thumb {
-            background: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-        }
-        #pauseSlider.thumb-green::-moz-range-thumb {
-            background: #10b981;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
-        }
-
+        body { font-family: 'Inter', 'Cairo', sans-serif; }
         .mirror-glow-card {
-            position: relative;
-            z-index: 1;
             background: rgba(15, 23, 42, 0.78);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.5s ease;
-            opacity: 0;
-            animation: fadeInCards 0.8s ease forwards 1s;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes fadeInCards {
-            to { opacity: 1; }
-        }
-
-        .mirror-glow-card::before {
+        .mirror-glow-card::before, .lang-panel-glow::before {
             content: '';
             position: absolute;
-            inset: -2px;
-            border-radius: inherit;
-            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.22), rgba(255,255,255,0.02), rgba(255,255,255,0.22), rgba(255,255,255,0.02));
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(59,130,246,0.02) 40%, transparent 70%);
+            animation: ambientGlowMove 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes ambientGlowMove {
+            0% { transform: translate(-20px, -20px); opacity: 0.4; }
+            50% { transform: translate(20px, 20px); opacity: 0.8; }
+            100% { transform: translate(-10px, 15px); opacity: 0.5; }
+        }
+
+        @keyframes telegramShimmerBlue {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes telegramShimmerGreen {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes telegramShimmerRed {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .repeat-btn.active {
+            background: linear-gradient(270deg, #3b82f6, #8b5cf6, #2563eb, #9333ea);
             background-size: 300% 300%;
-            animation: mirrorBacklightMove 16s ease infinite;
-            z-index: -1;
-            filter: blur(12px);
-            opacity: 0.4;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            animation: telegramShimmerBlue 3s ease infinite !important;
+            color: #ffffff !important;
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
         }
 
-        .mirror-glow-card.card-focused {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.22);
-            z-index: 10;
-        }
-
-        .mirror-glow-card.card-focused::before {
-            opacity: 0.75 !important;
-            animation: none !important;
-            background: rgba(255, 255, 255, 0.28);
-            filter: blur(14px);
-        }
-
-        .thabit-intro-flash {
-            animation: intenseWhiteFlashOnly 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        .thabit-white-gold {
-            background: linear-gradient(270deg, #ffffff, #ffffff, #fef08a, #ffffff, #eab308, #ffffff);
+        .telegram-btn-green {
+            background: linear-gradient(270deg, #059669, #10b981, #3b82f6, #047857);
             background-size: 300% 300%;
-            animation: smoothFlow 12s ease infinite;
+            animation: telegramShimmerGreen 3s ease infinite;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .telegram-btn-red {
+            background: linear-gradient(270deg, #e11d48, #f43f5e, #3b82f6, #9f1239);
+            background-size: 300% 300%;
+            animation: telegramShimmerRed 3s ease infinite;
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
+        }
+
+        .lang-btn.active {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #60a5fa !important;
+        }
+
+        /* Cinematic wind swaying & glowing entry for the title */
+        @keyframes introWindSway {
+            0% { opacity: 0; transform: translateX(45px) scale(0.9); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
+            30% { opacity: 1; transform: translateX(-12px) scale(1.05); text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 60px rgba(147, 197, 253, 0.9), 0 0 90px rgba(59, 130, 246, 0.7); }
+            60% { opacity: 1; transform: translateX(6px) scale(1); text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 0 45px rgba(147, 197, 253, 0.7); }
+            100% { opacity: 1; transform: translateX(0) scale(1); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
+        }
+
+        /* Smooth horizontal glowing wind streaks moving from right to left */
+        @keyframes windStreakMove {
+            0% { transform: translateX(120px); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateX(-140px); opacity: 0; }
+        }
+
+        .wind-streak {
+            position: absolute;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(191, 219, 254, 0.65), rgba(255, 255, 255, 0));
+            height: 1.5px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: windStreakMove cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+        }
+
+        /* Dense, rich, multi-layered realistic clouds */
+        @keyframes cloudDrift1 {
+            0% { transform: translateX(-60px) scale(1); opacity: 0.5; }
+            50% { transform: translateX(55px) scale(1.05); opacity: 0.75; }
+            100% { transform: translateX(-60px) scale(1); opacity: 0.5; }
+        }
+
+        @keyframes cloudDrift2 {
+            0% { transform: translateX(50px) scale(0.98); opacity: 0.4; }
+            50% { transform: translateX(-55px) scale(1.03); opacity: 0.65; }
+            100% { transform: translateX(50px) scale(0.98); opacity: 0.4; }
+        }
+
+        @keyframes cloudDrift3 {
+            0% { transform: translateX(-30px) scale(1.02); opacity: 0.55; }
+            50% { transform: translateX(35px) scale(0.95); opacity: 0.8; }
+            100% { transform: translateX(-30px) scale(1.02); opacity: 0.55; }
+        }
+
+        .realistic-cloud {
+            position: absolute;
+            background: radial-gradient(ellipse at center, rgba(148, 163, 184, 0.42) 0%, rgba(51, 65, 85, 0.25) 55%, transparent 85%);
+            border-radius: 50%;
+            filter: blur(10px);
+            pointer-events: none;
+        }
+
+        @keyframes thunderFlash {
+            0%, 91%, 94%, 97% {
+                filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0));
+                background-color: #0f172a;
+            }
+            92%, 95% {
+                filter: brightness(2.8) drop-shadow(0 0 45px rgba(224, 242, 254, 0.95));
+                background-color: #1e293b;
+            }
+            93% {
+                filter: brightness(1.3);
+                background-color: #0f172a;
+            }
+            96% {
+                filter: brightness(2.1) drop-shadow(0 0 30px rgba(186, 230, 253, 0.9));
+            }
+            100% {
+                filter: brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0));
+                background-color: #0f172a;
+            }
+        }
+
+        .intro-splash-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #0f172a;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            animation: thunderFlash 6s infinite;
+        }
+
+        .intro-title-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .intro-title {
+            animation: introWindSway 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Smooth light gold and white shimmering moving color effect for Header "THABIT" title */
+        @keyframes goldWhiteShimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .shimmer-gold-title {
+            background: linear-gradient(270deg, #fef08a, #ffffff, #fde047, #fef9c3, #eab308, #ffffff);
+            background-size: 400% 400%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35));
+            animation: goldWhiteShimmer 6s ease infinite;
+            filter: drop-shadow(0 0 12px rgba(253, 224, 71, 0.35));
         }
 
-        .telegram-auto-blue {
-            background: linear-gradient(270deg, #1d4ed8, #3b82f6, #60a5fa, #2563eb, #1d4ed8);
-            background-size: 300% 300%;
-            animation: smoothFlow 5s ease infinite;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        @keyframes fadeInContent {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .telegram-auto-purple {
-            background: linear-gradient(270deg, #7c3aed, #8b5cf6, #a78bfa, #6d28d9, #7c3aed);
-            background-size: 300% 300%;
-            animation: smoothFlow 5s ease infinite;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-        }
-
-        .telegram-auto-red {
-            background: linear-gradient(270deg, #991b1b, #dc2626, #ef4444, #b91c1c, #991b1b);
-            background-size: 300% 300%;
-            animation: smoothFlow 5s ease infinite;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
-        }
-
-        .telegram-auto-green {
-            background: linear-gradient(270deg, #059669, #34d399, #10b981, #047857, #059669);
-            background-size: 300% 300%;
-            animation: smoothFlow 5s ease infinite;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-        }
-
-        .text-glow-pop {
-            text-shadow: 0 0 12px rgba(59, 130, 246, 0.9), 0 0 25px rgba(59, 130, 246, 0.6);
-            transform: scale(1.03);
-            transition: all 0.4s ease;
-        }
-
-        .inner-text-glow {
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 20px rgba(59, 130, 246, 0.7);
-            transition: all 0.4s ease;
-        }
-
-        .icon-pop-glow {
-            filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9));
-            transform: scale(1.2);
-            transition: all 0.4s ease;
-        }
+        .page-content-hidden { opacity: 0; visibility: hidden; transition: opacity 1s ease; }
+        .page-content-visible { opacity: 1; visibility: visible; animation: fadeInContent 1s ease forwards; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-    <!-- الهيدر -->
-    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-50 transition-all">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-center">
-            <div class="text-center">
-                <h1 id="thabitLogo" class="font-bold text-xl tracking-tight text-white thabit-intro-flash">THABIT</h1>
-                <p id="subTitle" class="text-xs text-slate-400">pronounce on the go</p>
+    <div id="introSplash" class="intro-splash-screen">
+        <div class="intro-title-wrapper">
+            
+            <div style="position: absolute; top: -75px; left: -110px; right: -110px; height: 85px; pointer-events: none; z-index: 10; overflow: visible;">
+                <div class="realistic-cloud" style="top: -15px; left: -5%; width: 170px; height: 50px; animation: cloudDrift1 9s ease-in-out infinite alternate;"></div>
+                <div class="realistic-cloud" style="top: -8px; left: 18%; width: 140px; height: 42px; animation: cloudDrift3 11s ease-in-out infinite alternate;"></div>
+                <div class="realistic-cloud" style="top: -25px; left: 38%; width: 200px; height: 60px; animation: cloudDrift2 13s ease-in-out infinite alternate;"></div>
+                <div class="realistic-cloud" style="top: -12px; right: 22%; width: 180px; height: 52px; animation: cloudDrift1 15s ease-in-out infinite alternate;"></div>
+                <div class="realistic-cloud" style="top: -20px; right: -5%; width: 160px; height: 48px; animation: cloudDrift3 10s ease-in-out infinite alternate;"></div>
             </div>
+
+            <h1 class="intro-title">THABIT</h1>
+            
+            <div style="position: absolute; top: -35px; bottom: -25px; left: -70px; right: -70px; pointer-events: none; z-index: 30; overflow: visible;">
+                <div class="wind-streak" style="top: 10%; width: 85px; animation-duration: 1.1s; animation-delay: 0.1s;"></div>
+                <div class="wind-streak" style="top: 30%; width: 120px; animation-duration: 1.4s; animation-delay: 0.4s;"></div>
+                <div class="wind-streak" style="top: 50%; width: 65px; animation-duration: 0.9s; animation-delay: 0.2s;"></div>
+                <div class="wind-streak" style="top: 70%; width: 100px; animation-duration: 1.3s; animation-delay: 0.6s;"></div>
+                <div class="wind-streak" style="top: 90%; width: 90px; animation-duration: 1.2s; animation-delay: 0.3s;"></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-50 page-content-hidden" id="mainHeader">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col items-center justify-center text-center">
+            <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title">THABIT</h1>
+            <p id="uiHeaderSub" class="text-xs text-slate-400 mt-0.5">pronounce on the go</p>
         </div>
     </header>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6">
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-hidden" id="mainContainer">
         
-        <!-- Status Notification Box -->
-        <div id="toast" class="hidden p-4 rounded-xl border text-sm transition-all duration-300 flex items-center gap-3 shadow-lg">
+        <div id="toast" class="hidden p-4 rounded-xl border text-sm transition-all duration-300 flex items-center gap-3 shadow-lg z-50">
             <i id="toastIcon" class="fa-solid text-base"></i>
             <span id="toastMsg" class="font-medium"></span>
         </div>
 
-        <!-- Word Input Card -->
-        <div id="cardWord" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col gap-5">
+        <!-- لوحة الإدارة للفداوي -->
+        <div id="adminPanel" class="hidden mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/90 relative z-10">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 id="uiAdminPanelTitle" class="font-bold text-base text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Fedawy Admin Panel
+                </h2>
+                <span id="uiAdminTrainerOnly" class="text-xs text-slate-500">Trainer Only</span>
+            </div>
+
+            <div id="adminAuthSection" class="flex flex-col gap-3">
+                <label id="uiAdminPassLabel" class="text-xs text-slate-300 font-medium">Enter Admin Password:</label>
+                <div class="flex gap-2">
+                    <input type="password" id="adminPinInput" placeholder="Password..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <button type="button" onclick="verifyAdminPin()" id="uiAdminLoginBtn" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">Login</button>
+                </div>
+            </div>
+
+            <div id="adminContentSection" class="hidden flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                    <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">word (words):</label>
+                    <input type="text" id="newWordInput" placeholder="e.g., Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                    <span id="uiRecordWordAudio" class="text-xs text-slate-300">Record word audio:</span>
+                    <button id="adminRecordBtn" type="button" onclick="toggleAdminRecording()" class="w-14 h-14 rounded-full telegram-btn-red text-white flex items-center justify-center text-xl shadow-lg transition">
+                        <i id="adminRecordIcon" class="fa-solid fa-microphone"></i>
+                    </button>
+                    <div id="adminTimer" class="font-mono text-xs text-slate-400">00:00</div>
+                    <audio id="adminAudioPlayback" controls class="w-full rounded-lg hidden h-10 bg-slate-900 mt-2"></audio>
+                </div>
+
+                <button id="saveToSupabaseBtn" type="button" onclick="uploadAndSaveToSupabase()" disabled class="w-full py-3 telegram-btn-green disabled:bg-slate-800 disabled:text-slate-600 disabled:animation-none text-white font-semibold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                    <span id="uiUploadSaveBtn">Upload & Save to Database</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative z-10">
             
-            <!-- حقل الاسم -->
             <div class="flex flex-col gap-2">
-                <label id="nameLabel" for="userNameInput" class="text-sm font-semibold text-slate-300 flex items-center gap-2 transition-all duration-400">
-                    <i class="fa-solid fa-user text-indigo-400"></i> <span data-en="Your Name" data-ar="اسمك الكريم" data-eg="اسمك يا فنان">Your Name</span> <span class="text-rose-400">*</span>
+                <label id="uiLabelName" class="text-sm font-semibold text-slate-300 flex items-center gap-2 relative z-10">
+                    <i class="fa-solid fa-user text-indigo-400"></i> Your name <span class="text-rose-400">*</span>
                 </label>
-                <input type="text" id="userNameInput" required placeholder="Enter your name here..." 
-                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base sm:text-lg font-medium text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-inner">
+                <input type="text" id="userNameInput" placeholder="Enter trainee name here..." 
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-medium text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 relative z-10">
             </div>
 
-            <!-- زرارين تحت حقل الاسم -->
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <button id="cameraBtn" type="button" title="Capture Handwriting/Paper" 
-                        class="w-full py-3.5 telegram-auto-purple text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md border border-purple-400/30 active:scale-95">
-                        <i class="fa-solid fa-camera text-lg"></i>
-                        <span id="cameraText" class="transition-all duration-400 font-semibold text-xs sm:text-sm" data-en="Scan Paper" data-ar="تصوير ورقة" data-eg="صور ورقة">Scan Paper</span>
-                    </button>
-                    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
-                </div>
-
-                <div>
-                    <button id="uploadBtn" type="button" title="Upload Image from Device" 
-                        class="w-full py-3.5 telegram-auto-purple text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md border border-purple-400/30 active:scale-95">
-                        <i class="fa-solid fa-upload text-lg"></i>
-                        <span id="uploadText" class="transition-all duration-400 font-semibold text-xs sm:text-sm" data-en="Upload Image" data-ar="رفع صورة" data-eg="ارفع صورة">Upload Image</span>
-                    </button>
-                    <input type="file" id="uploadInput" accept="image/*" class="hidden">
-                </div>
+            <div class="flex flex-col gap-2 relative z-10">
+                <label id="uiLabelWord" class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib text-indigo-400"></i> Your word (s) <span class="text-rose-400">*</span>
+                </label>
+                <input type="text" id="wordInput" value="Thabit" placeholder="Type word here..." 
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-semibold text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="fetchSmartTranslation()">
             </div>
 
-            <!-- حقل الكلمات (افتراضياً THABIT بحرف T كابيتال) -->
-            <div class="flex flex-col gap-2 pt-1">
-                <div class="flex items-center justify-between">
-                    <label id="wordLabel" for="wordInput" class="text-sm font-semibold text-slate-300 flex items-center gap-2 transition-all duration-400">
-                        <i class="fa-solid fa-pen-nib text-indigo-400"></i> <span id="inputLabelText" data-en="Enter Word (s)" data-ar="أدخل الكلمة (أو الكلمات)" data-eg="اكتب الكلمة (أو الكلمات)">Enter Word (s)</span> <span class="text-rose-400">*</span>
-                    </label>
-                    <div class="hidden">
-                        <select id="voiceSelect"></select>
+            <div class="flex flex-col gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div class="flex flex-col items-center gap-1.5">
+                        <span id="uiPlaybackSpeed" class="text-[11px] text-slate-400 font-medium">Playback Speed</span>
+                        <div class="relative flex items-center justify-between w-48 px-2 py-1">
+                            <div class="absolute left-4 right-4 h-0.5 bg-slate-700 z-0"></div>
+                            <button type="button" onclick="setSpeed(0.75)" id="speedDot1" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">🐌</span></button>
+                            <button type="button" onclick="setSpeed(1.0)" id="speedDot2" class="relative z-10 w-4 h-4 rounded-full bg-orange-500 border-2 border-slate-950 transition shadow"></button>
+                            <button type="button" onclick="setSpeed(1.25)" id="speedDot3" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">⚡</span></button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-1.5">
+                        <span id="uiWaitTime" class="text-[11px] text-slate-400 font-medium">Repetition Waiting Time</span>
+                        <div class="relative flex items-center justify-between w-48 px-2 py-1">
+                            <div class="absolute left-4 right-4 h-0.5 bg-slate-700 z-0"></div>
+                            <button type="button" onclick="setWaitTime(1500)" id="waitDot1" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">🐌</span></button>
+                            <button type="button" onclick="setWaitTime(700)" id="waitDot2" class="relative z-10 w-4 h-4 rounded-full bg-orange-500 border-2 border-slate-950 transition shadow"></button>
+                            <button type="button" onclick="setWaitTime(100)" id="waitDot3" class="relative z-10 w-4 h-4 rounded-full bg-blue-600 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">⚡</span></button>
+                        </div>
                     </div>
                 </div>
-                <input type="text" id="wordInput" value="THABIT" placeholder="Type word or words here..." 
-                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base sm:text-lg font-semibold text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-inner">
+
+                <div class="flex items-center justify-center gap-4 pt-2 border-t border-slate-800/80">
+                    <button type="button" onclick="triggerRepeatAndPlay(2, event)" id="btnRep2" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">2</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(3, event)" id="btnRep3" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">3</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(5, event)" id="btnRep5" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">5</button>
+                </div>
             </div>
 
-            <!-- زرار اسمع (Listen) -->
-            <div class="flex flex-col items-center">
-                <button id="speakBtn" type="button" title="Listen to AI Speech" 
-                    class="w-full sm:w-1/2 py-3.5 telegram-auto-blue text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md border border-blue-400/30 active:scale-95">
+            <div class="flex flex-col items-center relative z-10">
+                <button id="speakBtn" type="button" class="w-full sm:w-1/2 py-3.5 telegram-btn-green text-white font-medium rounded-2xl transition flex items-center justify-center gap-2 shadow-md">
                     <i class="fa-solid fa-volume-high text-lg"></i>
-                    <span id="listenText" class="transition-all duration-400 font-semibold" data-en="Listen" data-ar="استمع" data-eg="اسمع">Listen</span>
+                    <span id="uiSpeakBtn">Listen once</span>
                 </button>
             </div>
 
-            <!-- أزرار التكرار -->
-            <div class="flex flex-wrap items-center justify-between gap-3 mt-1">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-400 mr-1"><i class="fa-solid fa-rotate-right text-blue-400 mr-1"></i> <span data-en="Repeat:" data-ar="تكرار:" data-eg="كرر:">Repeat:</span></span>
-                    <button type="button" class="repeat-btn px-4 py-2 telegram-auto-blue text-white text-xs font-bold rounded-xl transition shadow border border-blue-400/30 active:scale-95" data-count="2">2x</button>
-                    <button type="button" class="repeat-btn px-4 py-2 telegram-auto-blue text-white text-xs font-bold rounded-xl transition shadow border border-blue-400/30 active:scale-95" data-count="3">3x</button>
-                    <button type="button" class="repeat-btn px-4 py-2 telegram-auto-blue text-white text-xs font-bold rounded-xl transition shadow border border-blue-400/30 active:scale-95" data-count="5">5x</button>
-                </div>
-            </div>
-
-            <!-- سلايدر سرعة التكرار -->
-            <div class="bg-slate-900/60 border border-slate-700/50 rounded-2xl p-4 flex flex-col gap-2.5 shadow-inner">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="text-slate-300 font-medium flex items-center gap-1.5">
-                        <i class="fa-solid fa-sliders text-blue-400"></i>
-                        <span data-en="Pause Duration:" data-ar="سرعة التكرار:" data-eg="سرعة التكرار:">سرعة التكرار:</span>
-                    </span>
-                    <span id="pauseLabelValue" class="font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">أسرع ما يمكن (طلقة)</span>
-                </div>
-                
-                <input type="range" id="pauseSlider" min="1" max="3" step="1" value="1" 
-                    class="w-full cursor-pointer h-2 bg-slate-800 rounded-lg transition-colors duration-300 thumb-blue">
-                
-                <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 font-medium">
-                    <span id="labelFast" class="text-blue-400 font-bold" data-en="Turbo / Rocket" data-ar="أسرع ما يمكن (طلقة)" data-eg="أسرع ما يمكن (طلقة)">أسرع ما يمكن (طلقة)</span>
-                    <span id="labelMedium" class="text-slate-400" data-en="Medium" data-ar="متوسط" data-eg="متوسط">متوسط</span>
-                    <span id="labelSlow" class="text-slate-400" data-en="Relaxed" data-ar="هادئ وبراحتك" data-eg="هادئ وبراحتك">هادئ وبراحتك</span>
-                </div>
-            </div>
-
-            <!-- زرار تبديل اتجاه الترجمة -->
-            <div class="flex items-center justify-center my-[-4px]">
-                <button id="switchLangBtn" type="button" title="Switch Translation Direction" 
-                    class="bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 border border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-medium transition flex items-center gap-2 shadow-md active:scale-95">
-                    <i class="fa-solid fa-arrow-up-down text-xs"></i>
-                    <span id="directionLabel">English ⇄ Arabic</span>
-                </button>
-            </div>
-
-            <!-- Translation Output Box -->
-            <div class="bg-slate-900/80 border border-slate-700/60 rounded-2xl p-4 flex flex-col gap-2">
+            <div class="bg-slate-900/80 border border-slate-700/60 rounded-2xl p-4 flex flex-col gap-3 relative z-10">
                 <div class="flex items-center justify-between">
-                    <div id="outputLabelText" class="flex items-center gap-2 text-xs font-medium text-slate-400">
-                        <i class="fa-solid fa-language text-indigo-400"></i> <span data-en="Arabic Meaning" data-ar="المعنى بالعربية" data-eg="الترجمة بالعربي">Arabic Meaning</span>
+                    <div id="uiLabelTrans" class="text-xs font-medium text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-language text-indigo-400"></i> Translation / Meaning
                     </div>
-                    <button id="copyTranslationBtn" type="button" title="Copy Translation" class="text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/30 transition flex items-center gap-1.5">
-                        <i id="copyIcon" class="fa-regular fa-copy"></i>
-                        <span id="copyText" data-en="Copy" data-ar="نسخ" data-eg="نسخ">Copy</span>
-                    </button>
+                    <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+                        <button type="button" id="modeArBtn" onclick="setMeaningMode('ar')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">Arabic Meaning</button>
+                        <button type="button" id="modeEnBtn" onclick="setMeaningMode('en')" class="px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition">English Meaning</button>
+                    </div>
                 </div>
-                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">
-                    ثابت
-                </div>
-            </div>
-
-            <!-- Preset Quick Tags -->
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-                <span class="text-xs text-slate-400 mr-1"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> <span data-en="Quick Try:" data-ar="تجربة سريعة:" data-eg="تجارب سريعة:">Quick Try:</span></span>
-                <button type="button" class="preset-btn px-3 py-1 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-xs text-slate-300 transition border border-slate-600/40">THABIT</button>
-                <button type="button" class="preset-btn px-3 py-1 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-xs text-slate-300 transition border border-slate-600/40">Phenomenon</button>
-                <button type="button" class="preset-btn px-3 py-1 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-xs text-slate-300 transition border border-slate-600/40">Comfortable</button>
-                <button type="button" class="preset-btn px-3 py-1 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-xs text-slate-300 transition border border-slate-600/40">Hello my friend</button>
+                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">Stable / Firm</div>
             </div>
         </div>
 
-        <!-- Recording & Review Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Recorder Card (Your Turn) -->
-            <div id="cardRecord" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <!-- تسجيل التريني -->
+            <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center gap-6">
                 <div>
-                    <h2 class="font-bold text-base text-slate-200" data-en="Your Turn" data-ar="دورك للتسجيل" data-eg="دورك">Your Turn</h2>
-                    <p class="text-xs text-slate-400 mt-1" data-en="Tap microphone and pronounce the word above accurately" data-ar="اضغط على المايكروفون وانطق الكلمة بالأعلى بدقة" data-eg="اضغط على المايك وانطق الكلمة اللي فوق بدقة عشان نقيمك صح">Tap microphone and pronounce the word above accurately</p>
+                    <h2 id="uiRecTitle" class="font-bold text-base text-slate-200">Your turn</h2>
+                    <p id="uiRecDesc" class="text-xs text-slate-400 mt-1">Tap microphone and pronounce clearly</p>
                 </div>
-
-                <div class="relative my-2">
-                    <div id="recordRing" class="absolute inset-0 rounded-full bg-rose-500/20 scale-100 hidden"></div>
-                    <button id="recordBtn" type="button" class="relative z-10 w-20 h-20 rounded-full telegram-auto-red text-white flex items-center justify-center text-2xl shadow-xl transition border border-red-500/30 active:scale-95">
-                        <i id="recordIcon" class="fa-solid fa-microphone transition-all duration-400"></i>
-                    </button>
-                </div>
-
-                <div id="timerDisplay" class="font-mono text-sm text-slate-400 bg-slate-900/60 px-4 py-1.5 rounded-full border border-slate-800">
-                    00:00 / Max 30s
-                </div>
+                <button id="recordBtn" type="button" class="w-20 h-20 rounded-full telegram-btn-red text-white flex items-center justify-center text-2xl shadow-xl transition">
+                    <i id="recordIcon" class="fa-solid fa-microphone"></i>
+                </button>
+                <div id="timerDisplay" class="font-mono text-sm text-slate-400 bg-slate-900/60 px-4 py-1.5 rounded-full border border-slate-800">00:00 / Max 30s</div>
             </div>
 
-            <!-- Playback, Rating & Submit Card -->
-            <div id="cardReview" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between gap-5">
+            <!-- المراجعة وتقييم المطابقة المباشر والحقيقي -->
+            <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between gap-5">
                 <div>
-                    <h2 class="font-bold text-base text-slate-200" data-en="Review & Send" data-ar="المراجعة والإرسال" data-eg="اسمع وابعت">Review & Send</h2>
-                    <p class="text-xs text-slate-400 mt-1" data-en="Listen back to your recording and check strict pronunciation rating" data-ar="استمع إلى تسجيلك وافحص تقييم النطق بدقة صارمة" data-eg="اسمع التسجيل وشوف التقييم الصارم اللي بيقارن صوتك بالكلمة">Listen back to your recording and check strict pronunciation rating</p>
+                    <h2 id="uiSubTitle" class="font-bold text-base text-slate-200">Review & Speech Accuracy</h2>
+                    <p id="uiSubDesc" class="text-xs text-slate-400 mt-1">Real-time speech recognition & phoneme accuracy</p>
+                </div>
+                <audio id="audioPlayback" controls class="w-full rounded-xl hidden h-12 bg-slate-900"></audio>
+                <div id="noAudioPlaceholder" class="w-full h-12 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-xs text-slate-500">No trainee recording yet</div>
+                
+                <div id="ratingContainer" class="w-full py-3 rounded-xl bg-slate-900/80 border border-slate-700 flex flex-col gap-1 px-4 text-xs font-semibold hidden">
+                    <div class="flex items-center justify-between">
+                        <span id="uiScoreText">Pronunciation Match Score:</span>
+                        <span id="ratingBadge" class="text-amber-300 font-bold text-sm">-- / 10</span>
+                    </div>
+                    <div id="recognizedTextText" class="text-[11px] text-slate-400 font-normal border-t border-slate-800/80 pt-1 mt-1">Recognized Text: --</div>
                 </div>
 
-                <div class="flex flex-col gap-3">
-                    <audio id="audioPlayback" controls class="w-full rounded-xl hidden h-12 bg-slate-900"></audio>
-                    <div id="noAudioPlaceholder" class="w-full h-12 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center justify-center text-xs text-slate-500" data-en="No recording available yet" data-ar="لا يوجد تسجيل متاح بعد" data-eg="مفيش تسجيل لحد دلوقتي">
-                        No recording available yet
-                    </div>
-                </div>
-
-                <!-- شريط تقييم النطق -->
-                <div id="ratingContainer" class="w-full h-12 rounded-xl bg-slate-900/80 border border-slate-700/80 flex items-center justify-between px-4 text-xs font-semibold shadow-inner hidden">
-                    <div class="flex items-center gap-2 text-slate-300">
-                        <i class="fa-solid fa-star text-amber-400 text-sm"></i>
-                        <span data-en="Pronunciation Rating:" data-ar="تقييم النطق:" data-eg="تقييم النطق:">Pronunciation Rating:</span>
-                    </div>
-                    <div id="ratingBadge" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-lg font-bold text-sm tracking-wide">
-                        -- / 10
-                    </div>
-                </div>
-
-                <button id="sendTelegramBtn" type="button" disabled class="w-full py-3.5 px-4 telegram-auto-green disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-2xl shadow-lg transition flex items-center justify-center gap-2 border border-emerald-500/30 active:scale-95">
+                <button id="sendTelegramBtn" type="button" disabled class="w-full py-3.5 telegram-btn-green disabled:bg-slate-800 disabled:text-slate-600 disabled:animation-none text-white font-semibold rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
                     <i class="fa-brands fa-telegram text-lg"></i>
-                    <span id="sendBtnText" data-en="To Fedawy" data-ar="إرسال إلى فداوي" data-eg="ابعت لفداوي">To Fedawy</span>
+                    <span id="uiSendBtn">Send me</span>
                 </button>
             </div>
-
         </div>
 
-        <!-- أزرار اختيار اللغة -->
-        <div id="cardLang" class="mirror-glow-card rounded-3xl p-5 shadow-2xl flex flex-col gap-4">
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3 rounded-2xl backdrop-blur-md shadow-inner flex items-center justify-center">
-                <div class="text-sm text-slate-200 font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-globe text-amber-400"></i>
-                    <span data-en="Page Language" data-ar="لغة الصفحة" data-eg="لغة الصفحة">Page Language</span>
-                </div>
-            </div>
-
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3 rounded-2xl backdrop-blur-md shadow-inner flex items-center justify-between gap-3" dir="ltr">
-                <button type="button" class="lang-token w-28 sm:w-36 py-2.5 rounded-xl text-sm font-bold transition border border-amber-500/40 bg-amber-500/10 text-amber-400 text-center shadow-sm" data-lang="en">EN</button>
-                <button type="button" class="lang-token w-28 sm:w-36 py-2.5 rounded-xl text-sm font-bold transition border border-slate-700 bg-slate-900/90 text-slate-300 hover:text-white text-center shadow-inner" data-lang="eg">مصري</button>
-                <button type="button" class="lang-token w-28 sm:w-36 py-2.5 rounded-xl text-sm font-bold transition border border-slate-700 bg-slate-900/90 text-slate-300 hover:text-white text-center shadow-inner" data-lang="ar">عربي</button>
-            </div>
+        <div class="mirror-glow-card lang-panel-glow rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 bg-slate-950/80 relative z-10" style="direction: ltr !important;">
+            <button type="button" onclick="setLanguage('ar')" id="btnAr" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">العربية</button>
+            <button type="button" onclick="setLanguage('en')" id="btnEn" class="lang-btn active flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">English</button>
+            <button type="button" onclick="setLanguage('eg')" id="btnEg" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">مصري</button>
         </div>
 
     </main>
 
-    <!-- الفوتر -->
-    <footer class="border-t border-slate-800 bg-slate-900 py-4 text-center text-xs text-slate-500">
-        &copy; 2025-2026 THABIT &bull; Fully optimized for Mobile & Desktop
+    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-hidden" id="mainFooter">
+        <span>&copy; 2026 THABIT</span>
+        <span class="text-slate-700 hidden sm:inline">|</span>
+        <button onclick="toggleAdminPanel()" class="text-xs telegram-btn-green text-white px-4 py-2 rounded-xl transition flex items-center gap-1.5 font-bold shadow-lg">
+            <i class="fa-solid fa-plus text-white text-xs"></i> <span id="uiAdminText">Color it up</span>
+        </button>
     </footer>
 
-    <!-- سكربت التشغيل والنظام الصارم -->
     <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo(0, 0);
+
+            setTimeout(() => {
+                const splash = document.getElementById('introSplash');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.getElementById('mainHeader').classList.add('page-content-visible');
+                    document.getElementById('mainContainer').classList.add('page-content-visible');
+                    document.getElementById('mainFooter').classList.add('page-content-visible');
+                }, 800);
+            }, 1800);
+            fetchSmartTranslation();
+        });
+
+        window.onbeforeunload = function () { window.scrollTo(0, 0); };
+
+        let currentActiveAudioObject = null;
+        let isAudioPlayingSequence = false;
+
+        document.addEventListener('click', (e) => {
+            if (isRecording) {
+                const recordBtnElem = document.getElementById('recordBtn');
+                if (!recordBtnElem.contains(e.target)) {
+                    stopRec();
+                    showToast(isArOrEg() ? "تم إيقاف التسجيل" : "Recording stopped", "success");
+                }
+            }
+            if (currentActiveAudioObject || isAudioPlayingSequence) {
+                if (currentActiveAudioObject) {
+                    currentActiveAudioObject.pause();
+                    currentActiveAudioObject = null;
+                }
+                isAudioPlayingSequence = false;
+                showToast(isArOrEg() ? "تم إيقاف التشغيل الصوتي" : "Audio playback stopped", "success");
+            }
+            document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+        });
+
+        function isArOrEg() {
+            const lang = document.getElementById('htmlRoot').getAttribute('lang');
+            return lang === 'ar' || lang === 'arz';
+        }
+
+        document.getElementById('adminPinInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyAdminPin();
+        });
+
+        let currentPlaybackSpeed = 1.0; 
+        function setSpeed(speed) {
+            currentPlaybackSpeed = speed;
+            document.getElementById('speedDot1').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 0.75 ? "bg-red-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+            document.getElementById('speedDot2').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 1.0 ? "bg-orange-500" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
+            document.getElementById('speedDot3').className = "relative z-10 w-4 h-4 rounded-full " + (speed === 1.25 ? "bg-blue-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+        }
+
+        let currentRepeatWaitTime = 100; 
+        function setWaitTime(timeMs) {
+            currentRepeatWaitTime = timeMs;
+            document.getElementById('waitDot1').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 1500 ? "bg-red-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+            document.getElementById('waitDot2').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 700 ? "bg-orange-500" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
+            document.getElementById('waitDot3').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 100 ? "bg-blue-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
+        }
+
+        function selectRepeatButton(count, event) {
+            if (event) event.stopPropagation();
+            document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btnRep${count}`).classList.add('active');
+        }
+
+        function triggerRepeatAndPlay(count, event) {
+            selectRepeatButton(count, event);
+            executeWordPlayback(count, false);
+        }
+
         const TELEGRAM_BOT_TOKEN = "8926571687:AAHZAq_vya7TN54STz9bMJ9uL-yq1zvVPaE";
         const TELEGRAM_CHANNEL_ID = "-1004409277895";
 
+        const SUPABASE_URL = "https://vkfexceitwjmxncwceqb.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrZmV4Y2VpdHdqbXhuY3djZXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAzMzY5MTEsImV4cCI6MjEwNTkxMjkxMX0.6ArXtykrZhdNInphpg_LQTIvULkpwnnlzHA3dKhrNoI";
+        const BUCKET_NAME = "audio-files"; 
+
+        const translations = {
+            en: {
+                headerSub: "pronounce on the go",
+                adminText: "Color it up",
+                adminPanelTitle: "Fedawy Admin Panel",
+                adminTrainerOnly: "Trainer Only",
+                adminPassLabel: "Enter Admin Password:",
+                adminLoginBtn: "Login",
+                adminWordLabel: "word (words):",
+                recordWordAudio: "Record word audio:",
+                uploadSaveBtn: "Upload & Save to Database",
+                labelName: "Your name *",
+                namePlaceholder: "Enter trainee name here...",
+                labelWord: "Your word (s)",
+                wordPlaceholder: "Type word here...",
+                playbackSpeed: "Playback Speed",
+                waitTime: "Repetition Waiting Time",
+                speakBtn: "Listen once",
+                labelTrans: "Translation / Meaning",
+                recTitle: "Your turn",
+                recDesc: "Tap microphone and pronounce clearly",
+                subTitle: "Review & Speech Accuracy",
+                subDesc: "Real-time speech recognition & phoneme accuracy",
+                noAudio: "No trainee recording yet",
+                scoreText: "Pronunciation Match Score:",
+                sendBtn: "Send me",
+                arabicMeaningBtn: "Arabic Meaning",
+                englishMeaningBtn: "English Meaning"
+            },
+            ar: {
+                headerSub: "انطق وأنت في طريقك",
+                adminText: "لوحة التحكم الملونة",
+                adminPanelTitle: "لوحة إدارة الفداوي",
+                adminTrainerOnly: "للمدرب فقط",
+                adminPassLabel: "أدخل كلمة مرور المدرب:",
+                adminLoginBtn: "دخول",
+                adminWordLabel: "الكلمة أو الكلمات:",
+                recordWordAudio: "سجل صوت الكلمة:",
+                uploadSaveBtn: "رفع وحفظ في قاعدة البيانات",
+                labelName: "اسمك *",
+                namePlaceholder: "اكتب اسم المتدرب هنا...",
+                labelWord: "الكلمة أو الكلمات المطلوبة",
+                wordPlaceholder: "اكتب الكلمة هنا...",
+                playbackSpeed: "سرعة التشغيل",
+                waitTime: "وقت الانتظار للتكرار",
+                speakBtn: "استمع مرة واحدة",
+                labelTrans: "الترجمة / المعنى",
+                recTitle: "دورك الآن",
+                recDesc: "اضغط على الميكروفون وانطق الكلمة بوضوح",
+                subTitle: "المراجعة ودقة النطق",
+                subDesc: "التعرف الصوتي المباشر ودقة مخارج الحروف",
+                noAudio: "لا يوجد تسجيل للمتدرب حتى الآن",
+                scoreText: "درجة مطابقة النطق:",
+                sendBtn: "أرسل لي",
+                arabicMeaningBtn: "المعنى بالعربية",
+                englishMeaningBtn: "المعنى بالإنجليزية"
+            },
+            eg: {
+                headerSub: "انطق وانت ماشي",
+                adminText: "ظبط الدنيا",
+                adminPanelTitle: "لوحة تحكم الفداوي",
+                adminTrainerOnly: "للمدرب بس",
+                adminPassLabel: "اكتب باسورد المدرب:",
+                adminLoginBtn: "دخول",
+                adminWordLabel: "الكلمة أو الكلمات:",
+                recordWordAudio: "سجل صوت الكلمة:",
+                uploadSaveBtn: "ارفع واحفظ في الداتابيز",
+                labelName: "اسمك *",
+                namePlaceholder: "اكتب اسمك هنا يابطل...",
+                labelWord: "الكلمة المطلوبة",
+                wordPlaceholder: "اكتب الكلمة هنا...",
+                playbackSpeed: "سرعة الصوت",
+                waitTime: "وقت الاستراحة بين التكرار",
+                speakBtn: "اسمع مرة واحدة",
+                labelTrans: "الترجمة والمعنى",
+                recTitle: "دورك يابطل",
+                recDesc: "دوس ع الميكروفون وانطق الكلمة صح",
+                subTitle: "مراجعة ونطق دقيق",
+                subDesc: "تقييم مباشر وصوت حقيقي بيقيس دقة نطقك",
+                noAudio: "مفيش تسجيل لسه يا معلم",
+                scoreText: "نسبة تطابق النطق:",
+                sendBtn: "ابعتهالي",
+                arabicMeaningBtn: "المعنى بالعربي",
+                englishMeaningBtn: "المعنى بالإنجليزي"
+            }
+        };
+
+        function setLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            if (lang === 'ar') document.getElementById('btnAr').classList.add('active');
+            else if (lang === 'en') document.getElementById('btnEn').classList.add('active');
+            else if (lang === 'eg') document.getElementById('btnEg').classList.add('active');
+
+            const t = translations[lang];
+            const htmlRoot = document.getElementById('htmlRoot');
+
+            if (lang === 'ar' || lang === 'eg') {
+                htmlRoot.setAttribute('dir', 'rtl');
+                htmlRoot.setAttribute('lang', lang === 'ar' ? 'ar' : 'arz');
+            } else {
+                htmlRoot.setAttribute('dir', 'ltr');
+                htmlRoot.setAttribute('lang', 'en');
+            }
+
+            document.getElementById('uiHeaderSub').textContent = t.headerSub;
+            document.getElementById('uiAdminText').textContent = t.adminText;
+            document.getElementById('uiAdminPanelTitle').innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${t.adminPanelTitle}`;
+            document.getElementById('uiAdminTrainerOnly').textContent = t.adminTrainerOnly;
+            document.getElementById('uiAdminPassLabel').textContent = t.adminPassLabel;
+            document.getElementById('uiAdminLoginBtn').textContent = t.adminLoginBtn;
+            document.getElementById('uiLabelAdminWord').textContent = t.adminWordLabel;
+            document.getElementById('uiRecordWordAudio').textContent = t.recordWordAudio;
+            document.getElementById('uiUploadSaveBtn').textContent = t.uploadSaveBtn;
+            
+            document.getElementById('uiLabelName').innerHTML = `<i class="fa-solid fa-user text-indigo-400"></i> ${t.labelName}`;
+            document.getElementById('userNameInput').placeholder = t.namePlaceholder;
+            
+            document.getElementById('uiLabelWord').innerHTML = `<i class="fa-solid fa-pen-nib text-indigo-400"></i> ${t.labelWord}`;
+            document.getElementById('wordInput').placeholder = t.wordPlaceholder;
+            
+            document.getElementById('uiPlaybackSpeed').textContent = t.playbackSpeed;
+            document.getElementById('uiWaitTime').textContent = t.waitTime;
+            
+            document.getElementById('uiSpeakBtn').textContent = t.speakBtn;
+            document.getElementById('uiLabelTrans').innerHTML = `<i class="fa-solid fa-language text-indigo-400"></i> ${t.labelTrans}`;
+            
+            document.getElementById('modeArBtn').textContent = t.arabicMeaningBtn;
+            document.getElementById('modeEnBtn').textContent = t.englishMeaningBtn;
+
+            document.getElementById('uiRecTitle').textContent = t.recTitle;
+            document.getElementById('uiRecDesc').textContent = t.recDesc;
+            
+            document.getElementById('uiSubTitle').textContent = t.subTitle;
+            document.getElementById('uiSubDesc').textContent = t.subDesc;
+            document.getElementById('noAudioPlaceholder').textContent = t.noAudio;
+            document.getElementById('uiScoreText').textContent = t.scoreText;
+            document.getElementById('uiSendBtn').textContent = t.sendBtn;
+        }
+
+        let currentMeaningMode = 'ar';
+        function setMeaningMode(mode) {
+            currentMeaningMode = mode;
+            const arBtn = document.getElementById('modeArBtn');
+            const enBtn = document.getElementById('modeEnBtn');
+
+            if (mode === 'ar') {
+                arBtn.className = "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition";
+                enBtn.className = "px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition";
+            } else {
+                enBtn.className = "px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition";
+                arBtn.className = "px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition";
+            }
+            fetchSmartTranslation();
+        }
+
+        async function fetchSmartTranslation() {
+            const query = document.getElementById('wordInput').value.trim();
+            const outputDiv = document.getElementById('translationOutput');
+            if (!query) {
+                outputDiv.textContent = currentMeaningMode === 'ar' ? "استقرار / ثابت" : "Stable / Firm";
+                return;
+            }
+            try {
+                const targetLang = currentMeaningMode === 'ar' ? 'ar' : 'en';
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                let translatedText = "";
+                if (data && data[0]) {
+                    data[0].forEach(item => { if (item[0]) translatedText += item[0]; });
+                }
+                if (translatedText) outputDiv.textContent = translatedText;
+            } catch (err) {}
+        }
+
+        let globalAudioStream = null;
+        async function getSharedAudioStream() {
+            if (!globalAudioStream || !globalAudioStream.active || globalAudioStream.getTracks().some(track => track.readyState === 'ended')) {
+                globalAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+            return globalAudioStream;
+        }
+
+        function toggleAdminPanel() { document.getElementById('adminPanel').classList.toggle('hidden'); }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPinInput').value;
+            if (pin === "fadawe123") {
+                document.getElementById('adminAuthSection').classList.add('hidden');
+                document.getElementById('adminContentSection').classList.remove('hidden');
+                showToast(isArOrEg() ? "أهلاً بك يا فداوي، تم فتح اللوحة" : "Welcome Fedawy, panel unlocked", "success");
+            } else {
+                showToast(isArOrEg() ? "كلمة المرور غير صحيحة!" : "Incorrect password!", "error");
+            }
+        }
+
+        let adminMediaRecorder = null;
+        let adminAudioChunks = [];
+        let adminRecordedBlob = null;
+        let adminIsRecording = false;
+        let adminTimerInterval = null;
+        let adminSeconds = 0;
+
+        async function toggleAdminRecording() {
+            const btn = document.getElementById('adminRecordBtn');
+            const icon = document.getElementById('adminRecordIcon');
+            const timer = document.getElementById('adminTimer');
+            const playback = document.getElementById('adminAudioPlayback');
+
+            if (!adminIsRecording) {
+                try {
+                    const stream = await getSharedAudioStream();
+                    adminMediaRecorder = new MediaRecorder(stream);
+                    adminAudioChunks = [];
+                    adminMediaRecorder.ondataavailable = e => { if (e.data.size > 0) adminAudioChunks.push(e.data); };
+                    adminMediaRecorder.onstop = () => {
+                        adminRecordedBlob = new Blob(adminAudioChunks, { type: 'audio/mp3' });
+                        playback.src = URL.createObjectURL(adminRecordedBlob);
+                        playback.classList.remove('hidden');
+                        document.getElementById('saveToSupabaseBtn').removeAttribute('disabled');
+                        showToast(isArOrEg() ? "تم تسجيل صوت المدرب بنجاح" : "Trainer audio recorded successfully", "success");
+                    };
+                    adminMediaRecorder.start();
+                    adminIsRecording = true;
+                    btn.classList.replace('telegram-btn-red', 'bg-amber-600');
+                    icon.className = "fa-solid fa-stop";
+                    adminSeconds = 0;
+                    adminTimerInterval = setInterval(() => {
+                        adminSeconds++;
+                        timer.textContent = `00:${adminSeconds < 10 ? '0' : ''}${adminSeconds}`;
+                    }, 1000);
+                } catch (err) {}
+            } else {
+                adminMediaRecorder.stop();
+                adminIsRecording = false;
+                clearInterval(adminTimerInterval);
+                btn.classList.replace('bg-amber-600', 'telegram-btn-red');
+                icon.className = "fa-solid fa-microphone";
+            }
+        }
+
+        async function uploadAndSaveToSupabase() {
+            const word = document.getElementById('newWordInput').value.trim();
+            if (!word || !adminRecordedBlob) {
+                showToast(isArOrEg() ? "اكتب الكلمة أولاً وسجل صوتها!" : "Enter word and record audio first!", "error");
+                return;
+            }
+            const saveBtn = document.getElementById('saveToSupabaseBtn');
+            saveBtn.setAttribute('disabled', 'true');
+            try {
+                const fileName = `${word.replace(/\s+/g, '_')}_${Date.now()}.mp3`;
+                const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${fileName}`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'audio/mp3' },
+                    body: adminRecordedBlob
+                });
+                if (!uploadRes.ok) throw new Error();
+                const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${fileName}`;
+                const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+                    body: JSON.stringify({ word: word, audio_url: publicUrl })
+                });
+                if (!insertRes.ok) throw new Error();
+                showToast(isArOrEg() ? "تم حفظ الكلمة وصوتك في الداتابيز بنجاح! 🚀" : "Saved to database successfully! 🚀", "success");
+                document.getElementById('newWordInput').value = "";
+                document.getElementById('adminAudioPlayback').classList.add('hidden');
+                adminRecordedBlob = null;
+            } catch (err) {
+                showToast(isArOrEg() ? "حدث خطأ أثناء الرفع" : "Upload error", "error");
+            } finally {
+                saveBtn.removeAttribute('disabled');
+            }
+        }
+
         const userNameInput = document.getElementById('userNameInput');
         const wordInput = document.getElementById('wordInput');
-        const translationOutput = document.getElementById('translationOutput');
-        const copyTranslationBtn = document.getElementById('copyTranslationBtn');
-        const copyIcon = document.getElementById('copyIcon');
-        const copyText = document.getElementById('copyText');
-        const switchLangBtn = document.getElementById('switchLangBtn');
-        const directionLabel = document.getElementById('directionLabel');
-        const inputLabelText = document.getElementById('inputLabelText');
-        const outputLabelText = document.getElementById('outputLabelText');
         const speakBtn = document.getElementById('speakBtn');
-        const listenText = document.getElementById('listenText');
-        
-        const cameraBtn = document.getElementById('cameraBtn');
-        const cameraInput = document.getElementById('cameraInput');
-        const cameraText = document.getElementById('cameraText');
-
-        const uploadBtn = document.getElementById('uploadBtn');
-        const uploadInput = document.getElementById('uploadInput');
-        const uploadText = document.getElementById('uploadText');
-        
         const recordBtn = document.getElementById('recordBtn');
         const recordIcon = document.getElementById('recordIcon');
-        const recordRing = document.getElementById('recordRing');
         const timerDisplay = document.getElementById('timerDisplay');
         const audioPlayback = document.getElementById('audioPlayback');
         const noAudioPlaceholder = document.getElementById('noAudioPlaceholder');
         const ratingContainer = document.getElementById('ratingContainer');
         const ratingBadge = document.getElementById('ratingBadge');
+        const recognizedTextText = document.getElementById('recognizedTextText');
         const sendTelegramBtn = document.getElementById('sendTelegramBtn');
-        const sendBtnText = document.getElementById('sendBtnText');
-        const nameLabel = document.getElementById('nameLabel');
-        const wordLabel = document.getElementById('wordLabel');
-        const thabitLogo = document.getElementById('thabitLogo');
-        const subTitle = document.getElementById('subTitle');
-        
-        const pauseSlider = document.getElementById('pauseSlider');
-        const pauseLabelValue = document.getElementById('pauseLabelValue');
-        const labelFast = document.getElementById('labelFast');
-        const labelMedium = document.getElementById('labelMedium');
-        const labelSlow = document.getElementById('labelSlow');
-
-        const langTokens = document.querySelectorAll('.lang-token');
-        const repeatBtns = document.querySelectorAll('.repeat-btn');
         const toast = document.getElementById('toast');
-        const toastIcon = document.getElementById('toastIcon');
         const toastMsg = document.getElementById('toastMsg');
-        const presetBtns = document.querySelectorAll('.preset-btn');
 
-        const cardWord = document.getElementById('cardWord');
-        const cardRecord = document.getElementById('cardRecord');
-        const cardReview = document.getElementById('cardReview');
-        const cardLang = document.getElementById('cardLang');
-        const allCards = [cardWord, cardRecord, cardReview, cardLang];
-
-        function focusCard(activeCard) {
-            allCards.forEach(card => {
-                if (card === activeCard) card.classList.add('card-focused');
-                else card.classList.remove('card-focused');
-            });
-        }
-
-        function resetAllCards() {
-            allCards.forEach(card => card.classList.remove('card-focused'));
-        }
-
-        cardWord.addEventListener('focusin', () => focusCard(cardWord));
-        cardWord.addEventListener('click', () => focusCard(cardWord));
-        cardRecord.addEventListener('click', () => focusCard(cardRecord));
-        cardReview.addEventListener('click', () => focusCard(cardReview));
-        cardLang.addEventListener('click', () => focusCard(cardLang));
-
-        let isSpeakingActive = false;
-
-        document.addEventListener('click', (e) => {
-            const clickedInsideAnyCard = allCards.some(card => card.contains(e.target));
-            if (!clickedInsideAnyCard) resetAllCards();
-
-            const clickedRepeatBtn = e.target.closest('.repeat-btn');
-            const clickedSpeakBtn = e.target.closest('#speakBtn');
-            if (isSpeakingActive && !clickedRepeatBtn && !clickedSpeakBtn) {
-                if (synth) synth.cancel();
-                isSpeakingActive = false;
-            }
+        speakBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            executeWordPlayback(1, true);
         });
 
-        let synth = window.speechSynthesis;
-        let voices = [];
+        async function executeWordPlayback(timesToRepeat, isListenButton = false) {
+            const rawWord = wordInput.value.trim();
+            if (!rawWord) {
+                showToast(isArOrEg() ? "اكتب الكلمة أولاً!" : "Type a word first!", "error");
+                return;
+            }
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const data = await response.json();
+                let matchedAudioUrl = null;
+                if (data && data.length > 0) {
+                    const targetClean = rawWord.toLowerCase();
+                    for (let row of data) {
+                        if (row.word && row.word.toLowerCase() === targetClean) {
+                            matchedAudioUrl = row.audio_url;
+                            break;
+                        }
+                    }
+                }
+                if (matchedAudioUrl) {
+                    playAudioWithCustomSettings(matchedAudioUrl, timesToRepeat, currentPlaybackSpeed, currentRepeatWaitTime, isListenButton);
+                } else {
+                    showToast(isArOrEg() ? "عذراً، صوت المدرب غير متوفر لهذه الكلمة في قاعدة البيانات" : "Trainer audio not found for this word", "error");
+                }
+            } catch (err) {
+                showToast(isArOrEg() ? "خطأ في الاتصال بقاعدة البيانات" : "Database connection error", "error");
+            }
+        }
+
+        function playAudioWithCustomSettings(url, times, speed, waitTimeMs, isListenButton) {
+            let playedCount = 0;
+            isAudioPlayingSequence = true;
+            function playOne() {
+                if (!isAudioPlayingSequence || playedCount >= times) {
+                    isAudioPlayingSequence = false;
+                    currentActiveAudioObject = null;
+                    if (!isListenButton) document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+                    return;
+                }
+                const sound = new Audio(url);
+                sound.playbackRate = speed;
+                currentActiveAudioObject = sound;
+                sound.onended = () => {
+                    playedCount++;
+                    if (playedCount < times && isAudioPlayingSequence) {
+                        setTimeout(() => playOne(), waitTimeMs);
+                    } else {
+                        isAudioPlayingSequence = false;
+                        currentActiveAudioObject = null;
+                        if (!isListenButton) document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+                    }
+                };
+                sound.onerror = () => { isAudioPlayingSequence = false; currentActiveAudioObject = null; };
+                sound.play().catch(() => { isAudioPlayingSequence = false; currentActiveAudioObject = null; });
+            }
+            playOne();
+        }
+
         let mediaRecorder = null;
         let audioChunks = [];
         let recordedBlob = null;
         let recordingTimer = null;
         let secondsElapsed = 0;
         let isRecording = false;
-        let globalAudioStream = null; // متغير عام لحفظ إذن الميكروفون مرة واحدة فقط
 
-        let isEnglishToArabic = true;
-        let currentLang = 'en';
+        let speechRecognizer = null;
+        let lastRecognizedTranscript = "";
+        let lastSpeechConfidence = 0;
 
-        function updatePauseUI(val) {
-            pauseSlider.classList.remove('thumb-blue', 'thumb-yellow', 'thumb-green');
-            labelFast.className = "text-slate-400";
-            labelMedium.className = "text-slate-400";
-            labelSlow.className = "text-slate-400";
-
-            if (val === '1') {
-                pauseSlider.classList.add('thumb-blue');
-                pauseLabelValue.className = "font-bold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20";
-                labelFast.className = "text-blue-400 font-bold";
-                pauseLabelValue.textContent = (currentLang === 'en') ? "Turbo / Rocket" : "أسرع ما يمكن (طلقة)";
-            } else if (val === '2') {
-                pauseSlider.classList.add('thumb-yellow');
-                pauseLabelValue.className = "font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20";
-                labelMedium.className = "text-amber-400 font-bold";
-                pauseLabelValue.textContent = (currentLang === 'en') ? "Medium" : "متوسط";
-            } else if (val === '3') {
-                pauseSlider.classList.add('thumb-green');
-                pauseLabelValue.className = "font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20";
-                labelSlow.className = "text-emerald-400 font-bold";
-                pauseLabelValue.textContent = (currentLang === 'en') ? "Relaxed" : "هادئ وبراحتك";
-            }
-        }
-
-        pauseSlider.addEventListener('input', () => {
-            focusCard(cardWord);
-            updatePauseUI(pauseSlider.value);
-        });
-
-        function getPauseDelay() {
-            const val = pauseSlider.value;
-            if (val === '1') return 0;
-            if (val === '2') return 300;
-            if (val === '3') return 800;
-            return 0;
-        }
-
-        langTokens.forEach(btn => {
-            btn.addEventListener('click', () => {
-                focusCard(cardLang);
-                const selectedLang = btn.getAttribute('data-lang');
-                currentLang = selectedLang;
-
-                langTokens.forEach(b => {
-                    b.className = "lang-token w-28 sm:w-36 py-2.5 rounded-xl text-sm font-bold transition border border-slate-700 bg-slate-900/90 text-slate-300 hover:text-white text-center shadow-inner";
-                });
-                
-                btn.className = "lang-token w-28 sm:w-36 py-2.5 rounded-xl text-sm font-bold transition border border-amber-500/40 bg-amber-500/10 text-amber-400 text-center shadow-sm";
-
-                const htmlTag = document.documentElement;
-                subTitle.textContent = "pronounce on the go";
-
-                if (selectedLang === 'en') {
-                    htmlTag.setAttribute('dir', 'ltr');
-                    htmlTag.setAttribute('lang', 'en');
-                    document.querySelectorAll('[data-en]').forEach(el => el.textContent = el.getAttribute('data-en'));
-                    userNameInput.placeholder = "Enter your name here...";
-                    wordInput.placeholder = "Type word or words here...";
-                    updatePauseUI(pauseSlider.value);
-                } 
-                else if (selectedLang === 'ar') {
-                    htmlTag.setAttribute('dir', 'rtl');
-                    htmlTag.setAttribute('lang', 'ar');
-                    document.querySelectorAll('[data-ar]').forEach(el => el.textContent = el.getAttribute('data-ar'));
-                    userNameInput.placeholder = "أدخل اسمك هنا...";
-                    wordInput.placeholder = "اكتب الكلمة أو الكلمات هنا...";
-                    updatePauseUI(pauseSlider.value);
-                } 
-                else if (selectedLang === 'eg') {
-                    htmlTag.setAttribute('dir', 'rtl');
-                    htmlTag.setAttribute('lang', 'ar');
-                    document.querySelectorAll('[data-eg]').forEach(el => el.textContent = el.getAttribute('data-eg'));
-                    userNameInput.placeholder = "اكتب اسمك هنا يا فنان...";
-                    wordInput.placeholder = "اكتب الكلمة أو الكلمات هنا عايز تتمرن عليها...";
-                    updatePauseUI(pauseSlider.value);
-                }
-            });
-        });
-
-        switchLangBtn.addEventListener('click', () => {
-            focusCard(cardWord);
-            isEnglishToArabic = !isEnglishToArabic;
-            directionLabel.textContent = isEnglishToArabic ? "English ⇄ Arabic" : "Arabic ⇄ English";
-            wordInput.dispatchEvent(new Event('input'));
-        });
-
-        setTimeout(() => {
-            thabitLogo.classList.remove('thabit-intro-flash');
-            thabitLogo.classList.add('thabit-white-gold');
-        }, 1000);
-
-        // ترجمة تلقائية عند تحميل الصفحة لكلمة THABIT الافتراضية
-        window.addEventListener('DOMContentLoaded', async () => {
-            wordInput.value = "THABIT";
-            try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent("THABIT")}`);
-                const data = await res.json();
-                if (data && data[0]) {
-                    const translatedText = data[0].map(item => item[0]).join("");
-                    translationOutput.textContent = translatedText;
-                }
-            } catch (e) {
-                console.error("Initial translation error:", e);
-            }
-        });
-
-        wordInput.addEventListener('input', async () => {
-            focusCard(cardWord);
-            let rawText = wordInput.value;
+        function calculateTextSimilarity(str1, str2) {
+            let s1 = str1.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+            let s2 = str2.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+            if (s1 === s2) return 1.0;
+            if (!s1 || !s2) return 0.0;
             
-            const cleanedWords = rawText.trim().replace(/\s+/g, ' ').split(' ').filter(w => w.length > 0);
-            const query = cleanedWords.join(' ');
-
-            if (!query) {
-                translationOutput.textContent = "...";
-                copyTranslationBtn.classList.add('hidden');
-                return;
-            }
-
-            try {
-                const sl = isEnglishToArabic ? 'en' : 'ar';
-                const tl = isEnglishToArabic ? 'ar' : 'en';
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(query)}`);
-                const data = await res.json();
-                if (data && data[0]) {
-                    const translatedText = data[0].map(item => item[0]).join("");
-                    translationOutput.textContent = translatedText;
-                    if (translatedText && translatedText !== "...") {
-                        copyTranslationBtn.classList.remove('hidden');
-                    } else {
-                        copyTranslationBtn.classList.add('hidden');
-                    }
+            let track = Array(s2.length + 1).fill(null).map(() => Array(s1.length + 1).fill(null));
+            for (let i = 0; i <= s1.length; i += 1) track[0][i] = i;
+            for (let j = 0; j <= s2.length; j += 1) track[j][0] = j;
+            for (let j = 1; j <= s2.length; j += 1) {
+                for (let i = 1; i <= s1.length; i += 1) {
+                    const indicator = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                    track[j][i] = Math.min(
+                        track[j][i - 1] + 1,
+                        track[j - 1][i] + 1,
+                        track[j - 1][i - 1] + indicator
+                    );
                 }
-            } catch (e) {
-                console.error("Translation error:", e);
             }
-        });
-
-        async function processImageFile(file) {
-            if (!file) return;
-
-            let processingMsg = "Processing image and scanning text...";
-            if (currentLang === 'ar') processingMsg = "جاري معالجة الصورة وقراءة النص...";
-            if (currentLang === 'eg') processingMsg = "ثواني يا فنان.. بنقرا الكلام اللي في الصورة..";
-            showToast(processingMsg, 'success');
-
-            cameraBtn.setAttribute('disabled', 'true');
-            uploadBtn.setAttribute('disabled', 'true');
-
-            try {
-                const { data: { text } } = await Tesseract.recognize(file, 'eng+ara', {
-                    logger: m => console.log(m)
-                });
-
-                if (text && text.trim()) {
-                    const cleanText = text.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
-                    wordInput.value = cleanText;
-                    wordInput.dispatchEvent(new Event('input'));
-
-                    let successScan = "Text successfully extracted from image!";
-                    if (currentLang === 'ar') successScan = "تمت قراءة النص من الصورة بنجاح!";
-                    if (currentLang === 'eg') successScan = "عاش يا فنان! الكلام اللي في الصورة اتكتب أوتوماتيك.";
-                    showToast(successScan, 'success');
-                } else {
-                    throw new Error("No text detected");
-                }
-            } catch (err) {
-                console.error("OCR Error:", err);
-                let errScan = "Could not read text from image. Try a clearer image.";
-                if (currentLang === 'ar') errScan = "تعذر قراءة النص من الصورة، تأكد من وضوحها.";
-                if (currentLang === 'eg') errScan = "مش قادر أقرأ الكلام كويس يا فنان، جرب صورة أوضح.";
-                showToast(errScan, 'error');
-            } finally {
-                cameraBtn.removeAttribute('disabled');
-                uploadBtn.removeAttribute('disabled');
-                cameraInput.value = '';
-                uploadInput.value = '';
-            }
+            let distance = track[s2.length][s1.length];
+            let maxLen = Math.max(s1.length, s2.length);
+            return Math.max(0, (maxLen - distance) / maxLen);
         }
 
-        cameraBtn.addEventListener('click', () => {
-            focusCard(cardWord);
-            cameraInput.click();
-        });
-
-        cameraInput.addEventListener('change', (e) => {
-            processImageFile(e.target.files[0]);
-        });
-
-        uploadBtn.addEventListener('click', () => {
-            focusCard(cardWord);
-            uploadInput.click();
-        });
-
-        uploadInput.addEventListener('change', (e) => {
-            processImageFile(e.target.files[0]);
-        });
-
-        copyTranslationBtn.addEventListener('click', () => {
-            focusCard(cardWord);
-            const textToCopy = translationOutput.textContent;
-            if (!textToCopy || textToCopy === "...") return;
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                copyIcon.className = "fa-solid fa-check text-emerald-400";
-                copyText.textContent = (currentLang === 'en') ? "Copied!" : "تم النسخ";
-                
-                let successMsg = "Translation copied successfully!";
-                if (currentLang === 'ar') successMsg = "تم نسخ الترجمة بنجاح";
-                if (currentLang === 'eg') successMsg = "يا سلام! الترجمة اتنسخت بنجاح";
-                showToast(successMsg, "success");
-
-                setTimeout(() => {
-                    copyIcon.className = "fa-regular fa-copy";
-                    copyText.textContent = (currentLang === 'en') ? "Copy" : "نسخ";
-                }, 2000);
-            });
-        });
-
-        function getBestEnglishVoice() {
-            if (!synth) return null;
-            voices = synth.getVoices();
-            if (!voices || voices.length === 0) return null;
-
-            let selectedVoice = voices.find(v => (v.lang === 'en-US' || v.lang === 'en-GB') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('David') || v.name.includes('Mark') || v.name.includes('Zira') || v.name.includes('Samantha')));
-            if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en_US'));
-            if (!selectedVoice) selectedVoice = voices.find(v => v.lang.includes('en-GB') || v.lang.includes('en_GB'));
-            if (!selectedVoice) selectedVoice = voices.find(v => v.lang.toLowerCase().startsWith('en'));
-            return selectedVoice || voices[0];
-        }
-
-        if (synth) {
-            voices = synth.getVoices();
-            if (synth.onvoiceschanged !== undefined) {
-                synth.onvoiceschanged = () => { voices = synth.getVoices(); };
-            }
-        }
-
-        function speakWordOnce(text) {
-            return new Promise((resolve) => {
-                if (!synth) { resolve(); return; }
-                const utterThis = new SpeechSynthesisUtterance(text);
-                const bestVoice = getBestEnglishVoice();
-                if (bestVoice) utterThis.voice = bestVoice;
-                utterThis.rate = 1.0;
-                utterThis.pitch = 1.0;
-                utterThis.onend = () => resolve();
-                utterThis.onerror = () => resolve();
-                synth.speak(utterThis);
-            });
-        }
-
-        speakBtn.addEventListener('click', async () => {
-            focusCard(cardWord);
-            const text = wordInput.value.trim();
-            if (!text) {
-                let errText = 'Please enter a word or words first.';
-                if (currentLang === 'ar') errText = 'الرجاء إدخال كلمة أو كلمات أولاً.';
-                if (currentLang === 'eg') errText = 'يا أسطى اكتب كلمة أو كلمات الأول عشان أنطقها.';
-                showToast(errText, 'error');
-                return;
-            }
-            if (synth) synth.cancel();
-            isSpeakingActive = true;
-            await speakWordOnce(text);
-            isSpeakingActive = false;
-        });
-
-        repeatBtns.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                focusCard(cardWord);
-                const text = wordInput.value.trim();
-                const count = parseInt(btn.getAttribute('data-count'), 10);
-                const delayMs = getPauseDelay();
-
-                if (!text) {
-                    let errText = 'Please enter a word or words first.';
-                    if (currentLang === 'ar') errText = 'الرجاء إدخال كلمة أو كلمات أولاً.';
-                    if (currentLang === 'eg') errText = 'يا أسطى اكتب كلمة أو كلمات الأول عشان أكررها.';
-                    showToast(errText, 'error');
-                    return;
-                }
-                if (!synth) return;
-
-                synth.cancel();
-                isSpeakingActive = true;
-
-                for (let i = 0; i < count; i++) {
-                    if (!isSpeakingActive) break;
-                    await speakWordOnce(text);
-                    if (!isSpeakingActive) break;
-                    if (i < count - 1 && delayMs > 0) {
-                        await new Promise(r => {
-                            const timeoutId = setTimeout(r, delayMs);
-                            const checkInterval = setInterval(() => {
-                                if (!isSpeakingActive) {
-                                    clearTimeout(timeoutId);
-                                    clearInterval(checkInterval);
-                                    r();
-                                }
-                            }, 50);
-                            setTimeout(() => clearInterval(checkInterval), delayMs);
-                        });
-                    }
-                }
-                isSpeakingActive = false;
-            });
-        });
-
-        presetBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                focusCard(cardWord);
-                wordInput.value = btn.textContent;
-                wordInput.dispatchEvent(new Event('input'));
-                speakBtn.click();
-            });
-        });
-
-        recordBtn.addEventListener('click', async () => {
-            focusCard(cardRecord);
-            
-            const currentWordText = wordInput.value.trim();
-            if (!currentWordText) {
-                let wordMissingErr = 'Please enter a word above before recording your turn!';
-                if (currentLang === 'ar') wordMissingErr = 'الرجاء كتابة كلمة بالأعلى أولاً قبل بدء التسجيل!';
-                if (currentLang === 'eg') wordMissingErr = 'يا فنان لازم تكتب الكلمة في خانة (Enter Word) الأول عشان نعرف هنقارن نطقك بإيه!';
-                showToast(wordMissingErr, 'error');
-                wordInput.focus();
-                focusCard(cardWord);
+        recordBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!userNameInput.value.trim()) {
+                showToast(isArOrEg() ? "الرجاء إدخال اسم المتدرب أولاً!" : "Please enter the trainee name first!", "error");
+                userNameInput.focus();
                 return;
             }
 
             if (!isRecording) {
                 try {
-                    // طلب إذن الميكروفون مرة واحدة فقط والاحتفاظ به
-                    if (!globalAudioStream || !globalAudioStream.active) {
-                        globalAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    }
-
-                    let options = { mimeType: 'audio/webm' };
-                    if (!MediaRecorder.isTypeSupported('audio/webm')) {
-                        if (MediaRecorder.isTypeSupported('audio/mp4')) options = { mimeType: 'audio/mp4' };
-                        else if (MediaRecorder.isTypeSupported('audio/aac')) options = { mimeType: 'audio/aac' };
-                        else options = {};
-                    }
-
-                    mediaRecorder = new MediaRecorder(globalAudioStream, options);
+                    const stream = await getSharedAudioStream();
+                    mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
-
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) audioChunks.push(event.data);
-                    };
-
-                    mediaRecorder.onstop = () => {
-                        const mime = mediaRecorder.mimeType || 'audio/webm';
-                        recordedBlob = new Blob(audioChunks, { type: mime });
-                        
-                        if (recordedBlob.size < 4000 || secondsElapsed < 1) {
-                            audioPlayback.classList.add('hidden');
-                            noAudioPlaceholder.classList.remove('hidden');
-                            ratingContainer.classList.add('hidden');
-                            sendTelegramBtn.setAttribute('disabled', 'true');
-                            
-                            let unclearMsg = 'Sound not clear or empty breath detected. Please record again!';
-                            if (currentLang === 'ar') unclearMsg = 'الصوت غير واضح أو تم رصد نفخ/صوت فارغ. يرجى التسجيل مرة أخرى!';
-                            if (currentLang === 'eg') unclearMsg = 'الصوت مش واضح أو نفخ في المايك! مفيش تقييم.. سجل تاني بوضوح بعد إذنك.';
-                            showToast(unclearMsg, 'error');
-                            return;
-                        }
-
+                    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+                    
+                    mediaRecorder.onstop = async () => {
+                        recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
                         audioPlayback.src = URL.createObjectURL(recordedBlob);
                         audioPlayback.classList.remove('hidden');
                         noAudioPlaceholder.classList.add('hidden');
+
+                        await evaluateRealPronunciationScore();
                         
-                        let finalScore = "5.2";
-                        if (secondsElapsed >= 1 && secondsElapsed <= 7 && recordedBlob.size > 5000) {
-                            const randomGood = (Math.floor(Math.random() * 15) + 82) / 10;
-                            finalScore = randomGood.toFixed(1);
-                        } else {
-                            const randomBad = (Math.floor(Math.random() * 25) + 30) / 10;
-                            finalScore = randomBad.toFixed(1);
-                        }
-
-                        ratingBadge.textContent = `${finalScore} / 10`;
-                        ratingContainer.classList.remove('hidden');
-
                         sendTelegramBtn.removeAttribute('disabled');
-                        
-                        let successRec = 'Recording compared with word & rated successfully!';
-                        if (currentLang === 'ar') successRec = 'تمت مقارنة النطق بالكلمة وتقييمه بدقة.';
-                        if (currentLang === 'eg') successRec = 'قارنا نطقك بالكلمة المكتوبة وطلعنا التقييم الصارم.';
-                        showToast(successRec, 'success');
+                        showToast(isArOrEg() ? "تم تحليل وتقييم الصوت بنجاح!" : "Audio analyzed and evaluated successfully!", "success");
                     };
+
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    lastRecognizedTranscript = "";
+                    lastSpeechConfidence = 0;
+
+                    if (SpeechRecognition) {
+                        speechRecognizer = new SpeechRecognition();
+                        speechRecognizer.lang = 'en-US';
+                        speechRecognizer.interimResults = false;
+                        speechRecognizer.maxAlternatives = 1;
+
+                        speechRecognizer.onresult = (event) => {
+                            if (event.results && event.results[0]) {
+                                lastRecognizedTranscript = event.results[0][0].transcript;
+                                lastSpeechConfidence = event.results[0][0].confidence || 0.9;
+                            }
+                        };
+                        try { speechRecognizer.start(); } catch(e){}
+                    }
 
                     mediaRecorder.start();
                     isRecording = true;
-                    recordBtn.classList.remove('telegram-auto-red');
-                    recordBtn.classList.add('bg-amber-600', 'animate-pulse');
+                    recordBtn.classList.replace('telegram-btn-red', 'bg-amber-600');
                     recordIcon.className = "fa-solid fa-stop";
-                    recordRing.classList.remove('hidden');
-
                     secondsElapsed = 0;
-                    timerDisplay.textContent = '00:00 / Max 30s';
+                    
                     recordingTimer = setInterval(() => {
                         secondsElapsed++;
-                        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-                        const secs = String(secondsElapsed % 60).padStart(2, '0');
-                        timerDisplay.textContent = `${mins}:${secs} / Max 30s`;
-                        if (secondsElapsed >= 30) stopRecording();
+                        timerDisplay.textContent = `00:${secondsElapsed < 10 ? '0' : ''}${secondsElapsed} / Max 30s`;
+                        if (secondsElapsed >= 30) stopRec();
                     }, 1000);
-
-                } catch (err) {
-                    console.error('Microphone error:', err);
-                    let micErr = 'Microphone access denied or not supported.';
-                    if (currentLang === 'ar') micErr = 'تعذر الوصول إلى المايكروفون.';
-                    if (currentLang === 'eg') micErr = 'مش قادر أوصل للمايكروفون يا أسطى.';
-                    showToast(micErr, 'error');
-                }
+                } catch (err) {}
             } else {
-                stopRecording();
+                stopRec();
             }
         });
 
-        function stopRecording() {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
-                clearInterval(recordingTimer);
-                recordBtn.classList.remove('bg-amber-600', 'animate-pulse');
-                recordBtn.classList.add('telegram-auto-red');
-                recordIcon.className = "fa-solid fa-microphone";
-                recordRing.classList.add('hidden');
+        async function evaluateRealPronunciationScore() {
+            const rawWord = wordInput.value.trim();
+            ratingContainer.classList.remove('hidden');
+
+            if (!rawWord) {
+                ratingBadge.textContent = "0 / 10";
+                recognizedTextText.textContent = "No word specified";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const data = await response.json();
+                let hasDbRecord = false;
+                if (data && data.length > 0) {
+                    const targetClean = rawWord.toLowerCase();
+                    hasDbRecord = data.some(r => r.word && r.word.toLowerCase() === targetClean);
+                }
+
+                if (!hasDbRecord) {
+                    ratingBadge.textContent = "0 / 10";
+                    recognizedTextText.textContent = isArOrEg() ? "⚠️ هذه الكلمة غير مسجلة بصوت المدرب في قاعدة البيانات" : "⚠️ This word is not registered with trainer audio in the database";
+                    return;
+                }
+            } catch (e) {}
+
+            if (!lastRecognizedTranscript) {
+                ratingBadge.textContent = "0 / 10";
+                recognizedTextText.textContent = isArOrEg() ? "النصوص المتعارف عليها: لم يتم رصد صوت بوضوح" : "Recognized Text: Clear audio not detected";
+                return;
+            }
+
+            const similarity = calculateTextSimilarity(rawWord, lastRecognizedTranscript);
+            
+            if (similarity === 0) {
+                ratingBadge.textContent = "0 / 10";
+                recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (${isArOrEg() ? 'نطق غير صحيح' : 'Incorrect pronunciation'})`;
+            } else {
+                let rawScore = similarity * (lastSpeechConfidence > 0 ? lastSpeechConfidence : 0.95) * 10;
+                let finalScore = Math.min(10, Math.max(1, rawScore)).toFixed(1);
+                
+                ratingBadge.textContent = `${finalScore} / 10`;
+                recognizedTextText.png = `Recognized Text: "${lastRecognizedTranscript}" (Match: ${Math.round(similarity * 100)}%)`;
+                recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (Match: ${Math.round(similarity * 100)}%)`;
             }
         }
 
-        audioPlayback.addEventListener('play', () => focusCard(cardReview));
-
-        sendTelegramBtn.addEventListener('click', async () => {
-            focusCard(cardReview);
-            const userName = userNameInput.value.trim();
-            const word = wordInput.value.trim();
-            const ratingScore = ratingBadge.textContent;
-
-            if (!userName) {
-                let nameErr = 'Please enter your name first.';
-                if (currentLang === 'ar') nameErr = 'الرجاء إدخال اسمك أولاً.';
-                if (currentLang === 'eg') nameErr = 'اكتب اسمك الأول عشان نعرف مين اللي سجل.';
-                showToast(nameErr, 'error');
-                userNameInput.focus();
-                return;
+        function stopRec() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                if (speechRecognizer) {
+                    try { speechRecognizer.stop(); } catch(e){}
+                }
+                isRecording = false;
+                clearInterval(recordingTimer);
+                recordBtn.classList.replace('bg-amber-600', 'telegram-btn-red');
+                recordIcon.className = "fa-solid fa-microphone";
             }
+        }
 
-            if (!recordedBlob) {
-                let audioErr = 'No valid audio recording found to send.';
-                if (currentLang === 'ar') audioErr = 'لا يوجد تسجيل صوتي صالح للإرسال.';
-                if (currentLang === 'eg') audioErr = 'مفيش تسجيل صوتي صالح عشان نبعته يا فنان.';
-                showToast(audioErr, 'error');
-                return;
-            }
-
+        sendTelegramBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!recordedBlob) return;
             sendTelegramBtn.setAttribute('disabled', 'true');
-            let sendingText = "Sending to Fedawy...";
-            if (currentLang === 'ar') sendingText = "جاري الإرسال إلى فداوي...";
-            if (currentLang === 'eg') sendingText = "جاري الإرسال...";
-            sendTelegramBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-lg"></i> <span>${sendingText}</span>`;
-
             try {
                 const formData = new FormData();
                 formData.append('chat_id', TELEGRAM_CHANNEL_ID);
+                formData.append('voice', recordedBlob, 'voice.webm');
+                formData.append('caption', `👤 Trainee: ${userNameInput.value}\nWord: ${wordInput.value}\nScore: ${ratingBadge.textContent}\nRecognized: ${recognizedTextText.textContent}`);
                 
-                let fileExtension = 'webm';
-                if (recordedBlob.type.includes('mp4') || recordedBlob.type.includes('m4a')) fileExtension = 'm4a';
-                else if (recordedBlob.type.includes('ogg')) fileExtension = 'ogg';
-
-                formData.append('voice', recordedBlob, `pronunciation_${Date.now()}.${fileExtension}`);
-                formData.append('caption', `🎯 Pronunciation Practice:\n👤 Trainee: ${userName}\nWord: "${word}"\nMeaning: "${translationOutput.textContent}"\n⭐ Pronunciation Rating: ${ratingScore}`);
-
-                const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`;
-                const response = await fetch(telegramUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-                if (result.ok) {
-                    let successSend = 'Successfully sent to Fedawy!';
-                    if (currentLang === 'ar') successSend = 'تم الإرسال إلى فداوي بنجاح!';
-                    if (currentLang === 'eg') successSend = 'يا سلام! الصوت اتبعت لفداوي على التليجرام بالتقييم بنجاح.';
-                    showToast(successSend, 'success');
-                } else {
-                    throw new Error(result.description || 'Telegram API error');
-                }
-            } catch (err) {
-                console.error('Telegram send error:', err);
-                showToast(`Failed to send: ${err.message}`, 'error');
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, { method: 'POST', body: formData });
+                const json = await res.json();
+                if (json.ok) showToast(isArOrEg() ? "تم الإرسال إلى التليجرام بنجاح!" : "Sent to Telegram successfully!", "success");
+                else throw new Error();
+            } catch (e) {
+                showToast(isArOrEg() ? "فشل الإرسال إلى التليجرام" : "Failed to send to Telegram", "error");
             } finally {
                 sendTelegramBtn.removeAttribute('disabled');
-                let btnOriginal = "To Fedawy";
-                if (currentLang === 'ar') btnOriginal = "إرسال إلى فداوي";
-                if (currentLang === 'eg') btnOriginal = "ابعت لفداوي";
-                sendTelegramBtn.innerHTML = `<i class="fa-brands fa-telegram text-lg"></i> <span>${btnOriginal}</span>`;
             }
         });
 
-        function showToast(message, type = 'success') {
-            toast.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-300', 'bg-rose-500/10', 'border-rose-500/30', 'text-rose-300');
-            if (type === 'success') {
-                toast.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-300');
-            } else {
-                toast.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-300');
-            }
-            toastMsg.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 5000);
+        function showToast(msg, type) {
+            toast.className = `p-4 rounded-xl border text-sm flex items-center gap-3 shadow-lg z-50 ${type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`;
+            toastMsg.textContent = msg;
+            toast.classList.add('flex');
+            toast.classList.add('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(() => {
-                nameLabel.classList.add("text-glow-pop");
-                setTimeout(() => {
-                    nameLabel.classList.remove("text-glow-pop");
-                    wordLabel.classList.add("text-glow-pop");
-                }, 1800);
-
-                if (synth && synth.getVoices().length === 0) {
-                    synth.onvoiceschanged = () => { voices = synth.getVoices(); };
-                }
-
-                setTimeout(() => {
-                    wordLabel.classList.remove("text-glow-pop");
-                    listenText.classList.add("inner-text-glow");
-                }, 3600);
-
-                setTimeout(() => {
-                    listenText.classList.remove("inner-text-glow");
-                    recordIcon.classList.add("icon-pop-glow");
-                }, 5400);
-
-                setTimeout(() => {
-                    recordIcon.classList.remove("icon-pop-glow");
-                }, 7200);
-            }, 1800);
-        });
     </script>
 </body>
 </html>
