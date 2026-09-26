@@ -8,13 +8,44 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', 'Cairo', sans-serif; }
+        body { font-family: 'Inter', 'Cairo', sans-serif; position: relative; overflow-x: hidden; }
+
+        /* تأثير الكرة الضوئية المتحركة ببطء وبشكل سينمائي خلف الزجاج */
+        @keyframes ambientLightMove {
+            0% { transform: translate(10vw, 10vh) scale(1); }
+            25% { transform: translate(75vw, 20vh) scale(1.2); }
+            50% { transform: translate(60vw, 75vh) scale(0.9); }
+            75% { transform: translate(20vw, 65vh) scale(1.3); }
+            100% { transform: translate(10vw, 10vh) scale(1); }
+        }
+
+        .ambient-floating-orb {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(59, 130, 246, 0.12) 50%, transparent 80%);
+            border-radius: 50%;
+            filter: blur(55px);
+            pointer-events: none;
+            z-index: 1;
+            animation: ambientLightMove 18s ease-in-out infinite alternate;
+        }
+
         .mirror-glow-card {
             background: rgba(15, 23, 42, 0.78);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
             overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .card-shimmer-glow {
+            border-color: #fde047 !important;
+            box-shadow: 0 0 25px rgba(253, 224, 71, 0.6) !important;
+            transform: scale(1.01);
         }
 
         .mirror-glow-card::before, .lang-panel-glow::before {
@@ -54,20 +85,13 @@
             100% { background-position: 0% 50%; }
         }
 
-        .repeat-btn.active {
-            background: linear-gradient(270deg, #3b82f6, #8b5cf6, #2563eb, #9333ea);
-            background-size: 300% 300%;
-            animation: telegramShimmerBlue 3s ease infinite !important;
-            color: #ffffff !important;
-            border-color: #60a5fa !important;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-        }
-
-        .telegram-btn-green {
+        .repeat-btn, .telegram-btn-green {
             background: linear-gradient(270deg, #059669, #10b981, #3b82f6, #047857);
             background-size: 300% 300%;
             animation: telegramShimmerGreen 3s ease infinite;
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            color: #ffffff !important;
+            border-color: #34d399 !important;
         }
 
         .telegram-btn-red {
@@ -83,7 +107,6 @@
             border-color: #60a5fa !important;
         }
 
-        /* Cinematic wind swaying & glowing entry for the title */
         @keyframes introWindSway {
             0% { opacity: 0; transform: translateX(45px) scale(0.9); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
             30% { opacity: 1; transform: translateX(-12px) scale(1.05); text-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 60px rgba(147, 197, 253, 0.9), 0 0 90px rgba(59, 130, 246, 0.7); }
@@ -91,7 +114,6 @@
             100% { opacity: 1; transform: translateX(0) scale(1); text-shadow: 0 0 0px rgba(255, 255, 255, 0); }
         }
 
-        /* Smooth horizontal glowing wind streaks moving from right to left */
         @keyframes windStreakMove {
             0% { transform: translateX(120px); opacity: 0; }
             20% { opacity: 0.6; }
@@ -108,7 +130,6 @@
             animation: windStreakMove cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
         }
 
-        /* Dense, rich, multi-layered realistic clouds */
         @keyframes cloudDrift1 {
             0% { transform: translateX(-60px) scale(1); opacity: 0.5; }
             50% { transform: translateX(55px) scale(1.05); opacity: 0.75; }
@@ -187,17 +208,10 @@
             z-index: 2;
         }
 
-        /* Smooth light gold and white shimmering moving color effect for Header "THABIT" title */
         @keyframes goldWhiteShimmer {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .shimmer-gold-title {
@@ -220,9 +234,11 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
+    <!-- الكرة الضوئية المتحركة سينمائياً خلف زجاج الصفحة -->
+    <div class="ambient-floating-orb"></div>
+
     <div id="introSplash" class="intro-splash-screen">
         <div class="intro-title-wrapper">
-            
             <div style="position: absolute; top: -75px; left: -110px; right: -110px; height: 85px; pointer-events: none; z-index: 10; overflow: visible;">
                 <div class="realistic-cloud" style="top: -15px; left: -5%; width: 170px; height: 50px; animation: cloudDrift1 9s ease-in-out infinite alternate;"></div>
                 <div class="realistic-cloud" style="top: -8px; left: 18%; width: 140px; height: 42px; animation: cloudDrift3 11s ease-in-out infinite alternate;"></div>
@@ -243,61 +259,66 @@
         </div>
     </div>
 
-    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-50 page-content-hidden" id="mainHeader">
+    <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-40 page-content-hidden" id="mainHeader">
         <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col items-center justify-center text-center">
             <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title">THABIT</h1>
             <p id="uiHeaderSub" class="text-xs text-slate-400 mt-0.5">pronounce on the go</p>
         </div>
     </header>
 
-    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-hidden" id="mainContainer">
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-hidden relative z-10" id="mainContainer">
         
         <div id="toast" class="hidden p-4 rounded-xl border text-sm transition-all duration-300 flex items-center gap-3 shadow-lg z-50">
             <i id="toastIcon" class="fa-solid text-base"></i>
             <span id="toastMsg" class="font-medium"></span>
         </div>
 
-        <!-- لوحة الإدارة للفداوي -->
-        <div id="adminPanel" class="hidden mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/90 relative z-10">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h2 id="uiAdminPanelTitle" class="font-bold text-base text-amber-400 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved"></i> Fedawy Admin Panel
-                </h2>
-                <span id="uiAdminTrainerOnly" class="text-xs text-slate-500">Trainer Only</span>
-            </div>
-
-            <div id="adminAuthSection" class="flex flex-col gap-3">
-                <label id="uiAdminPassLabel" class="text-xs text-slate-300 font-medium">Enter Admin Password:</label>
-                <div class="flex gap-2">
-                    <input type="password" id="adminPinInput" placeholder="Password..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <button type="button" onclick="verifyAdminPin()" id="uiAdminLoginBtn" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">Login</button>
-                </div>
-            </div>
-
-            <div id="adminContentSection" class="hidden flex flex-col gap-4">
-                <div class="flex flex-col gap-2">
-                    <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">word (words):</label>
-                    <input type="text" id="newWordInput" placeholder="e.g., Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+        <!-- نافذة Admin Panel المنبثقة (Popup Modal) التي تظهر في منتصف الشاشة مع Blur على باقي الصفحة -->
+        <div id="adminModalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+            <div id="adminPanel" class="mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/95 w-full max-w-lg relative z-50">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 id="uiAdminPanelTitle" class="font-bold text-base text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i> Fedawy Admin Panel
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <span id="uiAdminTrainerOnly" class="text-xs text-slate-500">Trainer Only</span>
+                        <button onclick="toggleAdminPanel()" class="text-slate-400 hover:text-white text-base px-2 py-1 transition"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
                 </div>
 
-                <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-                    <span id="uiRecordWordAudio" class="text-xs text-slate-300">Record word audio:</span>
-                    <button id="adminRecordBtn" type="button" onclick="toggleAdminRecording()" class="w-14 h-14 rounded-full telegram-btn-red text-white flex items-center justify-center text-xl shadow-lg transition">
-                        <i id="adminRecordIcon" class="fa-solid fa-microphone"></i>
+                <div id="adminAuthSection" class="flex flex-col gap-3">
+                    <label id="uiAdminPassLabel" class="text-xs text-slate-300 font-medium">Enter Admin Password:</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="adminPinInput" placeholder="Password..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <button type="button" onclick="verifyAdminPin()" id="uiAdminLoginBtn" class="bg-amber-600 hover:bg-amber-500 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">Login</button>
+                    </div>
+                </div>
+
+                <div id="adminContentSection" class="hidden flex flex-col gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">word (words):</label>
+                        <input type="text" id="newWordInput" placeholder="e.g., Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+
+                    <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                        <span id="uiRecordWordAudio" class="text-xs text-slate-300">Record word audio:</span>
+                        <button id="adminRecordBtn" type="button" onclick="toggleAdminRecording()" class="w-14 h-14 rounded-full telegram-btn-red text-white flex items-center justify-center text-xl shadow-lg transition">
+                            <i id="adminRecordIcon" class="fa-solid fa-microphone"></i>
+                        </button>
+                        <div id="adminTimer" class="font-mono text-xs text-slate-400">00:00</div>
+                        <audio id="adminAudioPlayback" controls class="w-full rounded-lg hidden h-10 bg-slate-900 mt-2"></audio>
+                    </div>
+
+                    <button id="saveToSupabaseBtn" type="button" onclick="uploadAndSaveToSupabase()" disabled class="w-full py-3 telegram-btn-green disabled:bg-slate-800 disabled:text-slate-600 disabled:animation-none text-white font-semibold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                        <span id="uiUploadSaveBtn">Upload & Save to Database</span>
                     </button>
-                    <div id="adminTimer" class="font-mono text-xs text-slate-400">00:00</div>
-                    <audio id="adminAudioPlayback" controls class="w-full rounded-lg hidden h-10 bg-slate-900 mt-2"></audio>
                 </div>
-
-                <button id="saveToSupabaseBtn" type="button" onclick="uploadAndSaveToSupabase()" disabled class="w-full py-3 telegram-btn-green disabled:bg-slate-800 disabled:text-slate-600 disabled:animation-none text-white font-semibold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
-                    <i class="fa-solid fa-cloud-arrow-up text-base"></i>
-                    <span id="uiUploadSaveBtn">Upload & Save to Database</span>
-                </button>
             </div>
         </div>
 
-        <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative z-10">
-            
+        <!-- الديف الأول: Your Name -->
+        <div id="tourCard1" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative z-10">
             <div class="flex flex-col gap-2">
                 <label id="uiLabelName" class="text-sm font-semibold text-slate-300 flex items-center gap-2 relative z-10">
                     <i class="fa-solid fa-user text-indigo-400"></i> Your name <span class="text-rose-400">*</span>
@@ -331,16 +352,16 @@
                         <div class="relative flex items-center justify-between w-48 px-2 py-1">
                             <div class="absolute left-4 right-4 h-0.5 bg-slate-700 z-0"></div>
                             <button type="button" onclick="setWaitTime(1500)" id="waitDot1" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">🐌</span></button>
-                            <button type="button" onclick="setWaitTime(700)" id="waitDot2" class="relative z-10 w-4 h-4 rounded-full bg-orange-500 border-2 border-slate-950 transition shadow"></button>
+                            <button type="button" onclick="setWaitTime(700)" id="waitDot2" class="relative z-10 w-4 h-4 rounded-full bg-slate-700 border-2 border-slate-950 transition shadow"></button>
                             <button type="button" onclick="setWaitTime(100)" id="waitDot3" class="relative z-10 w-4 h-4 rounded-full bg-blue-600 border-2 border-slate-950 transition shadow flex items-center justify-center"><span class="absolute -top-5 text-[10px]">⚡</span></button>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-center gap-4 pt-2 border-t border-slate-800/80">
-                    <button type="button" onclick="triggerRepeatAndPlay(2, event)" id="btnRep2" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">2</button>
-                    <button type="button" onclick="triggerRepeatAndPlay(3, event)" id="btnRep3" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">3</button>
-                    <button type="button" onclick="triggerRepeatAndPlay(5, event)" id="btnRep5" class="repeat-btn px-6 py-2 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition">5</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(2, event)" id="btnRep2" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">2</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(3, event)" id="btnRep3" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">3</button>
+                    <button type="button" onclick="triggerRepeatAndPlay(5, event)" id="btnRep5" class="repeat-btn px-6 py-2.5 rounded-xl text-xs font-bold border transition shadow-lg">5</button>
                 </div>
             </div>
 
@@ -366,8 +387,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            <!-- تسجيل التريني -->
-            <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center gap-6">
+            <!-- الديف الثاني: Your turn -->
+            <div id="tourCard2" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center gap-6">
                 <div>
                     <h2 id="uiRecTitle" class="font-bold text-base text-slate-200">Your turn</h2>
                     <p id="uiRecDesc" class="text-xs text-slate-400 mt-1">Tap microphone and pronounce clearly</p>
@@ -378,8 +399,8 @@
                 <div id="timerDisplay" class="font-mono text-sm text-slate-400 bg-slate-900/60 px-4 py-1.5 rounded-full border border-slate-800">00:00 / Max 30s</div>
             </div>
 
-            <!-- المراجعة وتقييم المطابقة المباشر والحقيقي -->
-            <div class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between gap-5">
+            <!-- الديف الثالث: Review & Speech Accuracy -->
+            <div id="tourCard3" class="mirror-glow-card rounded-3xl p-6 shadow-2xl flex flex-col justify-between gap-5">
                 <div>
                     <h2 id="uiSubTitle" class="font-bold text-base text-slate-200">Review & Speech Accuracy</h2>
                     <p id="uiSubDesc" class="text-xs text-slate-400 mt-1">Real-time speech recognition & phoneme accuracy</p>
@@ -402,7 +423,8 @@
             </div>
         </div>
 
-        <div class="mirror-glow-card lang-panel-glow rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 bg-slate-950/80 relative z-10" style="direction: ltr !important;">
+        <!-- الديف الرابع: اللغات -->
+        <div id="tourCard4" class="mirror-glow-card lang-panel-glow rounded-2xl p-4 shadow-xl flex items-center justify-between gap-3 bg-slate-950/80 relative z-10" style="direction: ltr !important;">
             <button type="button" onclick="setLanguage('ar')" id="btnAr" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">العربية</button>
             <button type="button" onclick="setLanguage('en')" id="btnEn" class="lang-btn active flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">English</button>
             <button type="button" onclick="setLanguage('eg')" id="btnEg" class="lang-btn flex-1 py-2.5 px-4 rounded-xl text-xs font-bold border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 transition text-center relative z-10">مصري</button>
@@ -410,7 +432,8 @@
 
     </main>
 
-    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-hidden" id="mainFooter">
+    <!-- الديف الخامس: زرار Color it up (الفوتر) -->
+    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-hidden relative z-40" id="mainFooter">
         <span>&copy; 2026 THABIT</span>
         <span class="text-slate-700 hidden sm:inline">|</span>
         <button onclick="toggleAdminPanel()" class="text-xs telegram-btn-green text-white px-4 py-2 rounded-xl transition flex items-center gap-1.5 font-bold shadow-lg">
@@ -430,10 +453,43 @@
                     document.getElementById('mainHeader').classList.add('page-content-visible');
                     document.getElementById('mainContainer').classList.add('page-content-visible');
                     document.getElementById('mainFooter').classList.add('page-content-visible');
+
+                    setTimeout(() => {
+                        runCardsTourSequence();
+                    }, 400);
+
                 }, 800);
             }, 1800);
+
             fetchSmartTranslation();
         });
+
+        function runCardsTourSequence() {
+            const cardIds = ['tourCard1', 'tourCard2', 'tourCard3', 'tourCard4'];
+            let index = 0;
+
+            const interval = setInterval(() => {
+                cardIds.forEach(id => {
+                    document.getElementById(id).classList.remove('card-shimmer-glow');
+                });
+
+                if (index < cardIds.length) {
+                    const currentCard = document.getElementById(cardIds[index]);
+                    currentCard.classList.add('card-shimmer-glow');
+                    currentCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    cardIds.forEach(id => {
+                        document.getElementById(id).classList.remove('card-shimmer-glow');
+                    });
+
+                    const nameInput = document.getElementById('userNameInput');
+                    document.getElementById('tourCard1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    nameInput.focus();
+                }
+            }, 600);
+        }
 
         window.onbeforeunload = function () { window.scrollTo(0, 0); };
 
@@ -480,7 +536,7 @@
         function setWaitTime(timeMs) {
             currentRepeatWaitTime = timeMs;
             document.getElementById('waitDot1').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 1500 ? "bg-red-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
-            document.getElementById('waitDot2').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 700 ? "bg-orange-500" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
+            document.getElementById('waitDot2').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 700 ? "bg-slate-700" : "bg-slate-700") + " border-2 border-slate-950 transition shadow";
             document.getElementById('waitDot3').className = "relative z-10 w-4 h-4 rounded-full " + (timeMs === 100 ? "bg-blue-600" : "bg-slate-700") + " border-2 border-slate-950 transition shadow flex items-center justify-center";
         }
 
@@ -685,7 +741,10 @@
             return globalAudioStream;
         }
 
-        function toggleAdminPanel() { document.getElementById('adminPanel').classList.toggle('hidden'); }
+        // تشغيل وإيقاف نافذة الـ Modal المنبثقة لـ Color it up
+        function toggleAdminPanel() { 
+            document.getElementById('adminModalOverlay').classList.toggle('hidden'); 
+        }
 
         function verifyAdminPin() {
             const pin = document.getElementById('adminPinInput').value;
@@ -999,7 +1058,6 @@
                 let finalScore = Math.min(10, Math.max(1, rawScore)).toFixed(1);
                 
                 ratingBadge.textContent = `${finalScore} / 10`;
-                recognizedTextText.png = `Recognized Text: "${lastRecognizedTranscript}" (Match: ${Math.round(similarity * 100)}%)`;
                 recognizedTextText.textContent = `Recognized Text: "${lastRecognizedTranscript}" (Match: ${Math.round(similarity * 100)}%)`;
             }
         }
@@ -1041,8 +1099,7 @@
         function showToast(msg, type) {
             toast.className = `p-4 rounded-xl border text-sm flex items-center gap-3 shadow-lg z-50 ${type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`;
             toastMsg.textContent = msg;
-            toast.classList.add('flex');
-            toast.classList.add('hidden');
+            toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 4000);
         }
     </script>
