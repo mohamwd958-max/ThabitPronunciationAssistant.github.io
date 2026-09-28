@@ -13,16 +13,17 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Golden Fabric Shreds Effect - Positioned in the Back like a Blurred Glass Layer */
+        /* Golden Fabric Shreds Effect - Positioned in the Back with Device Tilt Shift */
         #goldenSparklesContainer {
             position: fixed;
-            inset: 0;
+            inset: -20px;
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             background: rgba(2, 6, 23, 0.15);
+            transition: transform 0.1s ease-out;
         }
 
         .golden-sparkle-wrapper {
@@ -39,7 +40,6 @@
             animation: windSway 4s ease-in-out infinite alternate;
         }
 
-        /* Random shapes resembling shredded golden fabric bits / falling leaves (Stars removed) */
         .shape-shred {
             border-radius: 2px;
         }
@@ -289,7 +289,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-    <!-- Golden Shreds Falling Container (Placed in the Back with Glass Blur Effect) -->
+    <!-- Golden Shreds Falling Container (Moves according to device slope/tilt) -->
     <div id="goldenSparklesContainer"></div>
 
     <!-- Cinematic Intro Overlay -->
@@ -598,7 +598,7 @@
             }
         }
 
-        // Device Orientation / Phone Shaking Effect
+        // Device Orientation / Phone Shaking Effect (Applied ONLY to gold sparkles background container)
         let shakeOffset = { x: 0, y: 0 };
         function initDeviceMotionAndShake() {
             // 1. Device Orientation (Beta/Gamma tilt tracking)
@@ -606,9 +606,9 @@
                 window.addEventListener('deviceorientation', (event) => {
                     const tiltX = event.gamma || 0; // Left/right (-90 to 90)
                     const tiltY = event.beta || 0;  // Forward/backward (-180 to 180)
-                    shakeOffset.x = (tiltX / 90) * 12; // max shift 12px
-                    shakeOffset.y = (tiltY / 180) * 12;
-                    applyDynamicShakeTransform();
+                    shakeOffset.x = (tiltX / 90) * 25; // shift sparkles container max 25px
+                    shakeOffset.y = (tiltY / 180) * 25;
+                    applyDynamicSparklesTransform();
                 }, true);
             }
 
@@ -625,7 +625,7 @@
                         if (acceleration && acceleration.x !== null && acceleration.y !== null) {
                             const speed = Math.abs(acceleration.x + acceleration.y + acceleration.z - lastX - lastY - lastZ) / diffTime * 10000;
                             if (speed > 180) { // Shaking threshold
-                                triggerIntenseShakeEffect();
+                                triggerIntenseSparklesShake();
                             }
                             lastX = acceleration.x;
                             lastY = acceleration.y;
@@ -636,26 +636,26 @@
             }
         }
 
-        function applyDynamicShakeTransform() {
-            const cards = document.querySelectorAll('.mirror-glow-card');
-            cards.forEach((card, idx) => {
-                const depthMultiplier = (idx + 1) * 0.3;
-                card.style.transform = `translate(${shakeOffset.x * depthMultiplier}px, ${shakeOffset.y * depthMultiplier}px)`;
-            });
+        function applyDynamicSparklesTransform() {
+            const container = document.getElementById('goldenSparklesContainer');
+            if (container) {
+                container.style.transform = `translate(${shakeOffset.x}px, ${shakeOffset.y}px)`;
+            }
         }
 
-        function triggerIntenseShakeEffect() {
-            const bodyElem = document.body;
-            bodyElem.style.transition = 'transform 0.05s ease';
+        function triggerIntenseSparklesShake() {
+            const container = document.getElementById('goldenSparklesContainer');
+            if (!container) return;
+            container.style.transition = 'transform 0.05s ease';
             let count = 0;
             const shakeInterval = setInterval(() => {
-                const rx = (Math.random() - 0.5) * 16;
-                const ry = (Math.random() - 0.5) * 16;
-                bodyElem.style.transform = `translate(${rx}px, ${ry}px)`;
+                const rx = (Math.random() - 0.5) * 35;
+                const ry = (Math.random() - 0.5) * 35;
+                container.style.transform = `translate(${rx}px, ${ry}px)`;
                 count++;
                 if (count > 8) {
                     clearInterval(shakeInterval);
-                    bodyElem.style.transform = 'translate(0px, 0px)';
+                    container.style.transform = 'translate(0px, 0px)';
                 }
             }, 50);
         }
