@@ -13,6 +13,55 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Golden Fabric Shreds & Leaf-fall Sparkles Effect */
+        #goldenSparklesContainer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            overflow: hidden;
+        }
+
+        .golden-sparkle-flake {
+            position: absolute;
+            top: -40px;
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ffffff 100%);
+            box-shadow: 0 0 10px rgba(253, 224, 71, 0.8), 0 0 20px rgba(234, 179, 8, 0.5);
+            opacity: 0.85;
+            animation: fallAndSway linear infinite;
+        }
+
+        /* Random shapes resembling shredded golden fabric bits / falling leaves */
+        .shape-shred {
+            border-radius: 2px;
+        }
+        .shape-leaf {
+            border-radius: 50% 0 50% 50%;
+        }
+        .shape-sparkle {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        @keyframes fallAndSway {
+            0% {
+                transform: translateY(-50px) translateX(0) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(50vh) translateX(40px) rotate(180deg) scale(1.1);
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(105vh) translateX(-30px) rotate(360deg) scale(0.9);
+                opacity: 0;
+            }
+        }
+
         /* Cinematic Intro Overlay Styles */
         #cinematicIntroOverlay {
             position: fixed;
@@ -125,12 +174,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        @keyframes borderRotate {
-            0% { border-image-source: linear-gradient(0deg, #ffffff, #10b981, #ffffff); }
-            50% { border-image-source: linear-gradient(180deg, #ffffff, #10b981, #ffffff); }
-            100% { border-image-source: linear-gradient(360deg, #ffffff, #10b981, #ffffff); }
-        }
-
         .running-glow-border {
             border: 3px solid transparent !important;
             border-radius: 1rem;
@@ -231,6 +274,9 @@
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Golden Sparkles & Shredded Fabric Falling Container -->
+    <div id="goldenSparklesContainer"></div>
 
     <!-- Cinematic Intro Overlay -->
     <div id="cinematicIntroOverlay">
@@ -504,8 +550,40 @@
     </footer>
 
     <script>
+        // Initialize Golden Fabric Shreds / Leaf-fall Sparkles Generator
+        function initGoldenSparkles() {
+            const container = document.getElementById('goldenSparklesContainer');
+            if (!container) return;
+            const sparkleCount = 35;
+            const shapes = ['shape-shred', 'shape-leaf', 'shape-sparkle'];
+
+            for (let i = 0; i < sparkleCount; i++) {
+                const flake = document.createElement('div');
+                const shapeClass = shapes[Math.floor(Math.random() * shapes.length)];
+                flake.className = `golden-sparkle-flake ${shapeClass}`;
+
+                // Random sizing resembling shredded fabric bits & leaves
+                const size = Math.floor(Math.random() * 8) + 5; // 5px to 12px
+                flake.style.width = `${size}px`;
+                flake.style.height = `${size * (Math.random() * 1.5 + 0.8)}px`;
+
+                // Random horizontal positioning across the page width
+                flake.style.left = `${Math.random() * 100}vw`;
+
+                // Staggered fall duration and animation delay for a natural organic look
+                const duration = Math.random() * 6 + 4; // 4s to 10s
+                const delay = Math.random() * 8; // 0s to 8s delay
+                flake.style.animationDuration = `${duration}s`;
+                flake.style.animationDelay = `${delay}s`;
+
+                container.appendChild(flake);
+            }
+        }
+
         // Trigger Cinematic Intro Removal after animation finishes
         window.addEventListener('DOMContentLoaded', () => {
+            initGoldenSparkles();
+
             setTimeout(() => {
                 const introOverlay = document.getElementById('cinematicIntroOverlay');
                 if (introOverlay) {
