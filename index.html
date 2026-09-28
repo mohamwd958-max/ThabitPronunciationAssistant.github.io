@@ -13,52 +13,66 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Golden Fabric Shreds & Leaf-fall Sparkles Effect */
+        /* Golden Fabric Shreds Effect - Positioned in the Back like a Blurred Glass Layer */
         #goldenSparklesContainer {
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 20;
+            z-index: 1;
             overflow: hidden;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            background: rgba(2, 6, 23, 0.15);
+        }
+
+        .golden-sparkle-wrapper {
+            position: absolute;
+            top: -40px;
+            animation: fallDown linear infinite;
         }
 
         .golden-sparkle-flake {
-            position: absolute;
-            top: -40px;
-            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ffffff 100%);
-            box-shadow: 0 0 10px rgba(253, 224, 71, 0.8), 0 0 20px rgba(234, 179, 8, 0.5);
-            opacity: 0.85;
-            animation: fallAndSway linear infinite;
+            background: linear-gradient(135deg, rgba(254, 240, 138, 0.9) 0%, rgba(234, 179, 8, 0.8) 50%, rgba(255, 255, 255, 0.95) 100%);
+            box-shadow: 0 0 16px rgba(253, 224, 71, 0.9), 0 0 30px rgba(234, 179, 8, 0.6);
+            filter: blur(1.5px);
+            opacity: 0.75;
+            animation: windSway 4s ease-in-out infinite alternate;
         }
 
-        /* Random shapes resembling shredded golden fabric bits / falling leaves */
+        /* Random shapes resembling shredded golden fabric bits / falling leaves (Stars removed) */
         .shape-shred {
             border-radius: 2px;
         }
         .shape-leaf {
             border-radius: 50% 0 50% 50%;
         }
-        .shape-sparkle {
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-        }
 
-        @keyframes fallAndSway {
+        @keyframes fallDown {
             0% {
-                transform: translateY(-50px) translateX(0) rotate(0deg) scale(0.8);
+                transform: translateY(-50px);
                 opacity: 0;
             }
             10% {
-                opacity: 0.9;
-            }
-            50% {
-                transform: translateY(50vh) translateX(40px) rotate(180deg) scale(1.1);
+                opacity: 0.85;
             }
             90% {
-                opacity: 0.8;
+                opacity: 0.75;
             }
             100% {
-                transform: translateY(105vh) translateX(-30px) rotate(360deg) scale(0.9);
+                transform: translateY(105vh);
                 opacity: 0;
+            }
+        }
+
+        @keyframes windSway {
+            0% {
+                transform: translateX(-40px) rotate(0deg) scale(0.8);
+            }
+            50% {
+                transform: translateX(40px) rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: translateX(-40px) rotate(360deg) scale(0.9);
             }
         }
 
@@ -106,8 +120,8 @@
                 filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
             }
             55% {
-                color: #fef08a;
-                filter: drop-shadow(0 0 35px rgba(253, 224, 71, 0.9)) drop-shadow(0 0 70px rgba(16, 185, 129, 0.6));
+                color: #ffffff;
+                filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 70px rgba(255, 255, 255, 0.8));
                 transform: scale(1.06);
             }
             80% {
@@ -275,7 +289,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-    <!-- Golden Sparkles & Shredded Fabric Falling Container -->
+    <!-- Golden Shreds Falling Container (Placed in the Back with Glass Blur Effect) -->
     <div id="goldenSparklesContainer"></div>
 
     <!-- Cinematic Intro Overlay -->
@@ -550,39 +564,106 @@
     </footer>
 
     <script>
-        // Initialize Golden Fabric Shreds / Leaf-fall Sparkles Generator
+        // Initialize Golden Shreds Generator (Stars removed, wind swaying left-to-right & right-to-left every 4s)
         function initGoldenSparkles() {
             const container = document.getElementById('goldenSparklesContainer');
             if (!container) return;
             const sparkleCount = 35;
-            const shapes = ['shape-shred', 'shape-leaf', 'shape-sparkle'];
+            const shapes = ['shape-shred', 'shape-leaf'];
 
             for (let i = 0; i < sparkleCount; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'golden-sparkle-wrapper';
+
                 const flake = document.createElement('div');
                 const shapeClass = shapes[Math.floor(Math.random() * shapes.length)];
                 flake.className = `golden-sparkle-flake ${shapeClass}`;
 
-                // Random sizing resembling shredded fabric bits & leaves
+                // Random sizing resembling shredded golden fabric bits & leaves
                 const size = Math.floor(Math.random() * 8) + 5; // 5px to 12px
                 flake.style.width = `${size}px`;
                 flake.style.height = `${size * (Math.random() * 1.5 + 0.8)}px`;
 
                 // Random horizontal positioning across the page width
-                flake.style.left = `${Math.random() * 100}vw`;
+                wrapper.style.left = `${Math.random() * 100}vw`;
 
                 // Staggered fall duration and animation delay for a natural organic look
-                const duration = Math.random() * 6 + 4; // 4s to 10s
+                const duration = Math.random() * 6 + 6; // 6s to 12s
                 const delay = Math.random() * 8; // 0s to 8s delay
-                flake.style.animationDuration = `${duration}s`;
-                flake.style.animationDelay = `${delay}s`;
+                wrapper.style.animationDuration = `${duration}s`;
+                wrapper.style.animationDelay = `${delay}s`;
 
-                container.appendChild(flake);
+                wrapper.appendChild(flake);
+                container.appendChild(wrapper);
             }
+        }
+
+        // Device Orientation / Phone Shaking Effect
+        let shakeOffset = { x: 0, y: 0 };
+        function initDeviceMotionAndShake() {
+            // 1. Device Orientation (Beta/Gamma tilt tracking)
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    const tiltX = event.gamma || 0; // Left/right (-90 to 90)
+                    const tiltY = event.beta || 0;  // Forward/backward (-180 to 180)
+                    shakeOffset.x = (tiltX / 90) * 12; // max shift 12px
+                    shakeOffset.y = (tiltY / 180) * 12;
+                    applyDynamicShakeTransform();
+                }, true);
+            }
+
+            // 2. Device Motion Shake Detection (Accelerated shaking or bumping)
+            if (window.DeviceMotionEvent) {
+                let lastX = 0, lastY = 0, lastZ = 0;
+                let lastUpdate = 0;
+                window.addEventListener('devicemotion', (event) => {
+                    const currentTimestamp = event.timeStamp;
+                    if ((currentTimestamp - lastUpdate) > 100) {
+                        const diffTime = currentTimestamp - lastUpdate;
+                        lastUpdate = currentTimestamp;
+                        const acceleration = event.accelerationIncludingGravity;
+                        if (acceleration && acceleration.x !== null && acceleration.y !== null) {
+                            const speed = Math.abs(acceleration.x + acceleration.y + acceleration.z - lastX - lastY - lastZ) / diffTime * 10000;
+                            if (speed > 180) { // Shaking threshold
+                                triggerIntenseShakeEffect();
+                            }
+                            lastX = acceleration.x;
+                            lastY = acceleration.y;
+                            lastZ = acceleration.z;
+                        }
+                    }
+                }, true);
+            }
+        }
+
+        function applyDynamicShakeTransform() {
+            const cards = document.querySelectorAll('.mirror-glow-card');
+            cards.forEach((card, idx) => {
+                const depthMultiplier = (idx + 1) * 0.3;
+                card.style.transform = `translate(${shakeOffset.x * depthMultiplier}px, ${shakeOffset.y * depthMultiplier}px)`;
+            });
+        }
+
+        function triggerIntenseShakeEffect() {
+            const bodyElem = document.body;
+            bodyElem.style.transition = 'transform 0.05s ease';
+            let count = 0;
+            const shakeInterval = setInterval(() => {
+                const rx = (Math.random() - 0.5) * 16;
+                const ry = (Math.random() - 0.5) * 16;
+                bodyElem.style.transform = `translate(${rx}px, ${ry}px)`;
+                count++;
+                if (count > 8) {
+                    clearInterval(shakeInterval);
+                    bodyElem.style.transform = 'translate(0px, 0px)';
+                }
+            }, 50);
         }
 
         // Trigger Cinematic Intro Removal after animation finishes
         window.addEventListener('DOMContentLoaded', () => {
             initGoldenSparkles();
+            initDeviceMotionAndShake();
 
             setTimeout(() => {
                 const introOverlay = document.getElementById('cinematicIntroOverlay');
@@ -803,7 +884,7 @@
         const translations = {
             en: { headerSub: "pronounce on the go", adminText: "Color it up", adminPanelTitle: "Fedawy Admin Panel", adminTrainerOnly: "Trainer Only", adminPassLabel: "Enter Admin Password:", adminLoginBtn: "Login", adminWordLabel: "word (s):", recordWordAudio: "Record word audio:", uploadSaveBtn: "Upload & Save to Database", labelName: "Your name *", namePlaceholder: "Enter trainee name here...", labelWord: "your word (s)", wordPlaceholder: "Type words...", speakBtn: "Listen once", downloadBtn: "Take your words with you !", labelTrans: "Translation / Meaning", recTitle: "Your turn", recDesc: "Tap microphone and pronounce clearly", subTitle: "Review & Speech Accuracy", subDesc: "Real-time speech recognition & phoneme accuracy", noAudio: "No trainee recording yet", scoreText: "Pronunciation Match Score:", sendBtn: "Send me", arabicMeaningBtn: "Arabic Meaning", englishMeaningBtn: "English Meaning" },
             ar: { headerSub: "انطق وأنت في طريقك", adminText: "لوحة التحكم", adminPanelTitle: "لوحة إدارة الفداوي", adminTrainerOnly: "للمدرب فقط", adminPassLabel: "أدخل كلمة مرور المدرب:", adminLoginBtn: "دخول", adminWordLabel: "الكلمة (الكلمات):", recordWordAudio: "سجل صوت الكلمة:", uploadSaveBtn: "رفع وحفظ في قاعدة البيانات", labelName: "اسمك *", namePlaceholder: "اكتب اسم المتدرب هنا...", labelWord: "your word (s)", wordPlaceholder: "اكتب الكلمات...", speakBtn: "استمع مرة واحدة", downloadBtn: "خذ كلماتك معك !", labelTrans: "الترجمة / المعنى", recTitle: "دورك الآن", recDesc: "اضغط على الميكروفون وانطق الكلمة بوضوح", subTitle: "المراجعة ودقة النطق", subDesc: "التعرف الصوتي المباشر ودقة مخارج الحروف", noAudio: "لا يوجد تسجيل للمتدرب حتى الآن", scoreText: "درجة مطابقة النطق:", sendBtn: "أرسل لي", arabicMeaningBtn: "المعنى بالعربية", englishMeaningBtn: "المعنى بالإنجليزية" },
-            eg: { headerSub: "انطق وانت ماشي", adminText: "ظبط الدنيا", adminPanelTitle: "لوحة تحكم الفداوي", adminTrainerOnly: "للمدرب بس", adminPassLabel: "اكتب باسورد المدرب:", adminLoginBtn: "دخول", adminWordLabel: "الكلمة (الكلمات):", recordWordAudio: "سجل صوت الكلمة:", uploadSaveBtn: "ارفع واحفظ في الداتابيز", labelName: "اسمك *", namePlaceholder: "اكتب اسمك هنا يابطل...", labelWord: "your word (s)", wordPlaceholder: "اكتب الكلمات...", speakBtn: "اسمع مرة واحدة", downloadBtn: "خد كلماتك معاك !", labelTrans: "الترجمة والمعنى", recTitle: "دورك يابطل", recDesc: "دوس ع الميكروفون وانطق الكلمة صح", subTitle: "مراجعة ونطق دقيق", subDesc: "تقييم مباشر وصوت حقيقي بيقيس دقة نطقك", noAudio: "مفيش تسجيل لسه يا معلم", scoreText: "نسبة تطابق النطق:", sendBtn: "ابعتهالي", arabicMeaningBtn: "المعنى بالعربي", englishMeaningBtn: "المعنى بالإنجليزي" }
+            eg: { headerSub: "انطق وانت ماشي", adminText: "ظبط الدنيا", adminPanelTitle: "لوحة تحكم الفداوي", adminTrainerOnly: "للمدرب بس", adminPassLabel: "اكتب باسورد المدرب:", adminLoginBtn: "دخول", adminWordLabel: "الكلمة (الكلمات):", recordWordAudio: "سجل صوت الكلمة:", uploadSaveBtn: "ارفع واحفظ في الداتابيز", labelName: "اسمك *", namePlaceholder: "اكتب اسمك here yابطل...", labelWord: "your word (s)", wordPlaceholder: "اكتب الكلمات...", speakBtn: "اسمع مرة واحدة", downloadBtn: "خد كلماتك معاك !", labelTrans: "الترجمة والمعنى", recTitle: "دورك يابطل", recDesc: "دوس ع الميكروفون وانطق الكلمة صح", subTitle: "مراجعة ونطق دقيق", subDesc: "تقييم مباشر وصوت حقيقي بيقيس دقة نطقك", noAudio: "مفيش تسجيل لسه يا معلم", scoreText: "نسبة تطابق النطق:", sendBtn: "ابعتهالي", arabicMeaningBtn: "المعنى بالعربي", englishMeaningBtn: "المعنى بالإنجليزي" }
         };
 
         function setLanguage(lang) {
