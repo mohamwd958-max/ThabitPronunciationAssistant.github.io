@@ -6,9 +6,73 @@
     <title>Thabit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Montserrat:wght@900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', 'Cairo', sans-serif; position: relative; overflow-x: hidden; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Cinematic Intro Overlay Styles */
+        #cinematicIntroOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: #020617;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+        }
+        #cinematicIntroOverlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .cinematic-intro-title {
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 900 !important;
+            font-size: 3.5rem;
+            letter-spacing: 0.15em;
+            padding-left: 0.15em;
+            color: #ffffff;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: introWordSequence 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes introWordSequence {
+            0% {
+                opacity: 0;
+                transform: scale(0.85);
+                filter: drop-shadow(0 0 0px rgba(255,255,255,0));
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+                color: #ffffff;
+                filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
+            }
+            55% {
+                color: #fef08a;
+                filter: drop-shadow(0 0 35px rgba(253, 224, 71, 0.9)) drop-shadow(0 0 70px rgba(16, 185, 129, 0.6));
+                transform: scale(1.06);
+            }
+            80% {
+                color: #ffffff;
+                filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 0px rgba(255,255,255,0));
+            }
+        }
 
         .mirror-glow-card {
             background: rgba(15, 23, 42, 0.78);
@@ -27,7 +91,6 @@
             animation: goldWhiteShimmer 8s ease infinite;
         }
 
-        /* تأثير إضاءة خاص ومختلف تماماً أثناء تشغيل زر التكرار */
         .repeat-btn.playing-active {
             background: linear-gradient(270deg, #f59e0b, #ef4444, #ec4899, #8b5cf6) !important;
             background-size: 300% 300% !important;
@@ -62,7 +125,32 @@
             100% { background-position: 0% 50%; }
         }
 
+        @keyframes borderRotate {
+            0% { border-image-source: linear-gradient(0deg, #ffffff, #10b981, #ffffff); }
+            50% { border-image-source: linear-gradient(180deg, #ffffff, #10b981, #ffffff); }
+            100% { border-image-source: linear-gradient(360deg, #ffffff, #10b981, #ffffff); }
+        }
+
+        .running-glow-border {
+            border: 3px solid transparent !important;
+            border-radius: 1rem;
+            background-image: linear-gradient(#0f172a, #0f172a), linear-gradient(135deg, #ffffff, #10b981, #ffffff);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            animation: rotateGlow 3s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.8)) drop-shadow(0 0 6px rgba(16,185,129,0.6)); }
+            50% { filter: drop-shadow(0 0 5px rgba(255,255,255,1)) drop-shadow(0 0 12px rgba(16,185,129,0.9)); }
+            100% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.8)) drop-shadow(0 0 6px rgba(16,185,129,0.6)); }
+        }
+
         .shimmer-gold-title {
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 900 !important;
+            letter-spacing: 0.15em;
+            padding-left: 0.15em;
             background: linear-gradient(270deg, #fef08a, #ffffff, #fde047, #fef9c3, #eab308, #ffffff);
             background-size: 400% 400%;
             -webkit-background-clip: text;
@@ -87,9 +175,7 @@
             100% { transform: translate(-50%, -50%) scale(1); }
         }
 
-        .thumb-vibrate {
-            animation: subtleVibrate 0.3s ease-in-out 1;
-        }
+        .thumb-vibrate { animation: subtleVibrate 0.3s ease-in-out 1; }
 
         .custom-slider-track {
             position: relative;
@@ -129,32 +215,55 @@
             transition: left 0.05s linear;
             z-index: 10;
         }
-        .custom-slider-thumb:active {
-            cursor: grabbing;
-            background: #ffffff;
-            border-color: #38bdf8;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+
+        .sliders-drawer-wrapper, .admin-collapsible-section {
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease;
+            max-height: 500px;
+            opacity: 1;
+            overflow: hidden;
+        }
+        .sliders-drawer-wrapper.collapsed, .admin-collapsible-section.collapsed {
+            max-height: 0px !important;
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
         }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
+    <!-- Cinematic Intro Overlay -->
+    <div id="cinematicIntroOverlay">
+        <h1 class="cinematic-intro-title">THABIT</h1>
+    </div>
+
     <header class="border-b border-slate-700/30 bg-slate-900/45 backdrop-blur-lg sticky top-0 z-40 page-content-visible" id="mainHeader">
-        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col items-center justify-center text-center">
-            <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title">Thabit</h1>
-            <p id="uiHeaderSub" class="text-xs text-slate-400 mt-0.5">pronounce on the go</p>
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div class="w-24"></div>
+            <div class="flex flex-col items-center justify-center text-center">
+                <h1 class="font-extrabold text-3xl tracking-tight shimmer-gold-title pr-2">THABIT</h1>
+                <p id="uiHeaderSub" class="text-xs text-slate-400 mt-0.5">pronounce on the go</p>
+            </div>
+            <div class="w-24"></div>
         </div>
     </header>
 
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 flex flex-col gap-6 page-content-visible relative z-10">
         
-        <div id="toast" class="hidden p-4 rounded-xl border text-sm transition-all duration-300 flex items-center gap-3 shadow-lg z-50">
-            <i id="toastIcon" class="fa-solid text-base"></i>
-            <span id="toastMsg" class="font-medium"></span>
+        <div id="generalToast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 p-3.5 rounded-xl border text-xs transition-all duration-300 flex items-center gap-2.5 shadow-2xl w-full max-w-md z-50 bg-slate-900/95 backdrop-blur-md">
+            <i id="generalToastIcon" class="fa-solid text-sm"></i>
+            <span id="generalToastMsg" class="font-medium text-white"></span>
         </div>
 
-        <div id="adminModalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-            <div id="adminPanel" class="mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/30 flex flex-col gap-5 bg-slate-950/95 w-full max-w-lg relative z-50 max-h-[90vh] overflow-y-auto">
+        <div id="adminModalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4 gap-4">
+            
+            <div id="adminToast" class="hidden p-3 rounded-xl border text-xs transition-all duration-300 flex items-center gap-2.5 shadow-lg w-full max-w-lg z-50 bg-slate-900/90 backdrop-blur-md">
+                <i id="adminToastIcon" class="fa-solid text-sm"></i>
+                <span id="adminToastMsg" class="font-medium text-white"></span>
+            </div>
+
+            <div id="adminPanel" class="mirror-glow-card rounded-3xl p-6 shadow-2xl border border-amber-500/35 flex flex-col gap-5 bg-slate-950/95 w-full max-w-lg relative z-50 max-h-[90vh] overflow-y-auto no-scrollbar">
+                
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <h2 id="uiAdminPanelTitle" class="font-bold text-base text-amber-400 flex items-center gap-2">
                         <i class="fa-solid fa-shield-halved"></i> Fedawy Admin Panel
@@ -176,10 +285,9 @@
                 <div id="adminContentSection" class="hidden flex flex-col gap-4">
                     <div class="flex flex-col gap-2">
                         <label id="uiLabelAdminWord" class="text-xs font-semibold text-slate-300">word (s):</label>
-                        <input type="text" id="newWordInput" placeholder="e.g. Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500" oninput="checkIfWordExistsInDb(this.value)">
+                        <input type="text" id="newWordInput" placeholder="e.g. Hello" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500" oninput="checkIfWordExistsInDb(this.value)" onkeydown="handleAdminSpacebar(event)">
                     </div>
 
-                    <!-- خيارات التعامل مع الكلمة الموجودة مسبقاً -->
                     <div id="dbWordConflictBox" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col gap-2">
                         <span id="conflictWarningText" class="text-xs text-amber-300 font-medium">⚠️ This word already exists in the database! What would you like to do?</span>
                         <div class="flex gap-2">
@@ -188,7 +296,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                    <div class="flex flex-col items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 relative">
                         <span id="uiRecordWordAudio" class="text-xs text-slate-300">Record word audio:</span>
                         <button id="adminRecordBtn" type="button" onclick="toggleAdminRecording()" class="w-14 h-14 rounded-full telegram-btn-red text-white flex items-center justify-center text-xl shadow-lg transition">
                             <i id="adminRecordIcon" class="fa-solid fa-microphone"></i>
@@ -203,16 +311,51 @@
                     </button>
 
                     <div class="flex flex-col gap-2.5 pt-3 border-t border-slate-800">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                        <div onclick="toggleAdminSection('dueWordsSection', 'dueWordsToggleIcon')" class="flex items-center justify-between cursor-pointer bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 hover:border-amber-500/40 transition">
+                            <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5 pointer-events-none">
                                 <i class="fa-solid fa-list-check"></i> Internal Due Words (<span id="dueWordsCount">0</span>)
                             </label>
-                            <button type="button" onclick="clearCompletedDueWords()" class="text-[10px] text-slate-400 hover:text-rose-400 transition underline">Clear Checked</button>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-slate-400 underline">Show / Hide</span>
+                                <i id="dueWordsToggleIcon" class="fa-solid fa-chevron-down text-xs text-amber-400 transition-transform duration-300"></i>
+                            </div>
                         </div>
-                        <div id="dueWordsContainer" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 max-h-40 overflow-y-auto">
-                            <span class="text-xs text-slate-500 text-center py-2">No pending words right now.</span>
+                        <div id="dueWordsSection" class="admin-collapsible-section collapsed flex flex-col gap-2">
+                            <div class="flex items-center justify-between px-1">
+                                <label class="flex items-center gap-1 text-[10px] text-slate-300 cursor-pointer">
+                                    <input type="checkbox" id="selectAllDue" onclick="toggleSelectAllDue(this)" class="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer"> Select All
+                                </label>
+                                <button type="button" onclick="clearCompletedDueWords()" class="text-[10px] text-slate-400 hover:text-rose-400 transition underline">Clear Checked</button>
+                            </div>
+                            <div id="dueWordsContainer" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 max-h-40 overflow-y-auto no-scrollbar">
+                                <span class="text-xs text-slate-500 text-center py-2">No pending words right now.</span>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="flex flex-col gap-2.5 pt-3 border-t border-slate-800">
+                        <div onclick="toggleAdminSection('trashBinSection', 'trashToggleIcon')" class="flex items-center justify-between cursor-pointer bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 hover:border-rose-500/40 transition">
+                            <label class="text-xs font-bold text-rose-400 flex items-center gap-1.5 pointer-events-none">
+                                <i class="fa-solid fa-trash-can"></i> Trash Bin (<span id="trashCount">0</span>)
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-slate-400 underline">Show / Hide</span>
+                                <i id="trashToggleIcon" class="fa-solid fa-chevron-down text-xs text-rose-400 transition-transform duration-300"></i>
+                            </div>
+                        </div>
+                        <div id="trashBinSection" class="admin-collapsible-section collapsed flex flex-col gap-2">
+                            <div class="flex items-center justify-between px-1">
+                                <label class="flex items-center gap-1 text-[10px] text-slate-300 cursor-pointer">
+                                    <input type="checkbox" id="selectAllTrash" onclick="toggleSelectAllTrash(this)" class="w-3.5 h-3.5 rounded accent-rose-500 cursor-pointer"> Select All
+                                </label>
+                                <button type="button" onclick="deleteSelectedTrashItems()" class="text-[10px] bg-rose-600/30 hover:bg-rose-600 text-rose-200 hover:text-white px-2 py-0.5 rounded transition">Delete Selected</button>
+                            </div>
+                            <div id="trashWordsContainer" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col gap-2 max-h-40 overflow-y-auto no-scrollbar">
+                                <span class="text-xs text-slate-500 text-center py-2">Trash is empty.</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -228,45 +371,53 @@
 
             <div class="flex flex-col gap-2 relative z-10">
                 <label id="uiLabelWord" class="text-sm font-semibold text-slate-300 flex items-center gap-2">
-                    <i class="fa-solid fa-pen-nib text-indigo-400"></i> word (s) <span class="text-rose-400">*</span>
+                    <i class="fa-solid fa-pen-nib text-indigo-400"></i> your word (s) <span class="text-rose-400">*</span>
                 </label>
                 <input type="text" id="wordInput" value="Thabit" placeholder="Type words..." 
-                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-semibold text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="fetchSmartTranslation()">
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-semibold text-white placeholder-slate-500 focus:outline-none transition-all duration-300" oninput="handleMainWordInput(this.value)">
             </div>
 
             <div class="flex flex-col gap-4 bg-slate-950/60 p-4 rounded-2xl border border-slate-800 relative z-10">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    
-                    <div class="flex flex-col items-center gap-1.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
-                        <div class="flex items-center justify-between w-full px-1">
-                            <span id="uiPlaybackSpeed" class="text-[11px] text-slate-300 font-medium">Word Speed</span>
+                <div id="slidersDropdownTrigger" onclick="toggleSlidersDrawer(event)" class="flex flex-col items-center gap-1.5 bg-slate-900/90 p-3 rounded-xl border border-amber-500/40 shadow-md cursor-pointer hover:border-amber-400 transition relative">
+                    <div class="flex items-center justify-between w-full px-1">
+                        <div class="flex items-center gap-2">
+                            <span id="uiPlaybackSpeed" class="text-[11px] text-amber-300 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-sliders text-xs"></i> Word Speed
+                            </span>
+                            <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30 animate-pulse">Smart Menu</span>
+                        </div>
+                        <div class="flex items-center gap-2">
                             <span id="valSpeed" class="text-[10px] text-amber-300 font-mono font-bold">1.0x</span>
-                        </div>
-                        <div class="custom-slider-track" id="sliderSpeed" onmousedown="startSliderDrag(event, 'speed')" ontouchstart="startSliderDrag(event, 'speed')">
-                            <div class="custom-slider-thumb" id="thumbSpeed"></div>
+                            <i id="drawerToggleIcon" class="fa-solid fa-chevron-down text-xs text-amber-400 transition-transform duration-300"></i>
                         </div>
                     </div>
+                    <div class="custom-slider-track" id="sliderSpeed" onmousedown="startSliderDrag(event, 'speed')" ontouchstart="startSliderDrag(event, 'speed')">
+                        <div class="custom-slider-thumb" id="thumbSpeed"></div>
+                    </div>
+                </div>
 
-                    <div class="flex flex-col items-center gap-1.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
-                        <div class="flex items-center justify-between w-full px-1">
-                            <span id="uiWaitTime" class="text-[11px] text-slate-300 font-medium">Multi-repeat Wait</span>
-                            <span id="valWait" class="text-[10px] text-amber-300 font-mono font-bold">700ms</span>
+                <div id="slidersDrawerWrapper" class="sliders-drawer-wrapper collapsed flex flex-col gap-4 pt-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div class="flex flex-col items-center gap-1.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 backdrop-blur-md">
+                            <div class="flex items-center justify-between w-full px-1">
+                                <span id="uiWaitTime" class="text-[11px] text-slate-300 font-medium">Multi-repeat Wait</span>
+                                <span id="valWait" class="text-[10px] text-amber-300 font-mono font-bold">700ms</span>
+                            </div>
+                            <div class="custom-slider-track" id="sliderWait" onmousedown="startSliderDrag(event, 'wait')" ontouchstart="startSliderDrag(event, 'wait')">
+                                <div class="custom-slider-thumb" id="thumbWait"></div>
+                            </div>
                         </div>
-                        <div class="custom-slider-track" id="sliderWait" onmousedown="startSliderDrag(event, 'wait')" ontouchstart="startSliderDrag(event, 'wait')">
-                            <div class="custom-slider-thumb" id="thumbWait"></div>
+
+                        <div class="flex flex-col items-center gap-1.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 backdrop-blur-md">
+                            <div class="flex items-center justify-between w-full px-1">
+                                <span id="uiCommaSpeed" class="text-[11px] text-slate-300 font-medium">Between Words Pause</span>
+                                <span id="valComma" class="text-[10px] text-amber-300 font-mono font-bold">800ms</span>
+                            </div>
+                            <div class="custom-slider-track" id="sliderComma" onmousedown="startSliderDrag(event, 'comma')" ontouchstart="startSliderDrag(event, 'comma')">
+                                <div class="custom-slider-thumb" id="thumbComma"></div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="flex flex-col items-center gap-1.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800/80">
-                        <div class="flex items-center justify-between w-full px-1">
-                            <span id="uiCommaSpeed" class="text-[11px] text-slate-300 font-medium">Between Words Pause</span>
-                            <span id="valComma" class="text-[10px] text-amber-300 font-mono font-bold">800ms</span>
-                        </div>
-                        <div class="custom-slider-track" id="sliderComma" onmousedown="startSliderDrag(event, 'comma')" ontouchstart="startSliderDrag(event, 'comma')">
-                            <div class="custom-slider-thumb" id="thumbComma"></div>
-                        </div>
-                    </div>
-
                 </div>
 
                 <div class="flex items-center justify-center gap-4 pt-3 border-t border-slate-800/80">
@@ -293,11 +444,11 @@
                         <i class="fa-solid fa-language text-indigo-400"></i> Translation / Meaning
                     </div>
                     <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-                        <button type="button" id="modeArBtn" onclick="setMeaningMode('ar')" class="px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition">Arabic Meaning</button>
-                        <button type="button" id="modeEnBtn" onclick="setMeaningMode('en')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">English Meaning</button>
+                        <button type="button" id="modeArBtn" onclick="setMeaningMode('ar')" class="px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">Arabic Meaning</button>
+                        <button type="button" id="modeEnBtn" onclick="setMeaningMode('en')" class="px-3 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition">English Meaning</button>
                     </div>
                 </div>
-                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">Stable</div>
+                <div id="translationOutput" class="text-white font-medium text-sm sm:text-base">ثابت</div>
             </div>
         </div>
 
@@ -344,32 +495,79 @@
 
     </main>
 
-    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-3 page-content-visible relative z-40">
+    <footer class="border-t border-slate-800 bg-slate-900 py-4 px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3 page-content-visible relative z-40">
         <span>&copy; 2026 Thabit</span>
-        <span class="text-slate-700 hidden sm:inline">|</span>
-        <button onclick="toggleAdminPanel()" class="text-xs telegram-btn-green text-white px-4 py-2 rounded-xl transition flex items-center gap-1.5 font-bold shadow-lg">
+        <button onclick="toggleAdminPanel()" class="text-xs telegram-btn-green text-white px-3.5 py-2 rounded-xl transition inline-flex items-center gap-1.5 font-bold shadow-lg">
             <i class="fa-solid fa-plus text-white text-xs"></i> <span id="uiAdminText">Color it up</span>
         </button>
+        <span>Pronounce on the go</span>
     </footer>
 
     <script>
+        // Trigger Cinematic Intro Removal after animation finishes
         window.addEventListener('DOMContentLoaded', () => {
-            setMeaningMode('en');
+            setTimeout(() => {
+                const introOverlay = document.getElementById('cinematicIntroOverlay');
+                if (introOverlay) {
+                    introOverlay.classList.add('fade-out');
+                }
+            }, 2300); // 2.3 seconds intro duration
+
+            setMeaningMode('ar');
             fetchSmartTranslation();
             loadDueWordsList();
+            checkAndProcessTrashBin();
+            loadTrashBinList();
             initSliders();
+            checkMainWordStatus(document.getElementById('wordInput').value);
         });
 
         let currentActiveAudioObject = null;
         let isAudioPlayingSequence = false;
         let activePlayingRepeatCount = null;
 
+        let isSlidersDrawerOpen = false;
+        function toggleSlidersDrawer(e) {
+            if (e) e.stopPropagation();
+            const drawer = document.getElementById('slidersDrawerWrapper');
+            const icon = document.getElementById('drawerToggleIcon');
+            isSlidersDrawerOpen = !isSlidersDrawerOpen;
+            if (isSlidersDrawerOpen) {
+                drawer.classList.remove('collapsed');
+                icon.style.transform = "rotate(180deg)";
+            } else {
+                drawer.classList.add('collapsed');
+                icon.style.transform = "rotate(0deg)";
+            }
+        }
+
+        function toggleAdminSection(sectionId, iconId) {
+            const section = document.getElementById(sectionId);
+            const icon = document.getElementById(iconId);
+            const isCollapsed = section.classList.contains('collapsed');
+            if (isCollapsed) {
+                section.classList.remove('collapsed');
+                icon.style.transform = "rotate(180deg)";
+            } else {
+                section.classList.add('collapsed');
+                icon.style.transform = "rotate(0deg)";
+            }
+        }
+
         document.addEventListener('click', (e) => {
+            const drawerContainer = document.getElementById('slidersDrawerWrapper');
+            const triggerContainer = document.getElementById('slidersDropdownTrigger');
+            if (isSlidersDrawerOpen && !triggerContainer.contains(e.target) && !drawerContainer.contains(e.target)) {
+                isSlidersDrawerOpen = false;
+                drawerContainer.classList.add('collapsed');
+                document.getElementById('drawerToggleIcon').style.transform = "rotate(0deg)";
+            }
+
             if (isRecording) {
                 const recordBtnElem = document.getElementById('recordBtn');
                 if (!recordBtnElem.contains(e.target)) {
                     stopRec();
-                    showToast("Recording stopped", "success");
+                    showAdminToast("Recording stopped", "success");
                 }
             }
             if (currentActiveAudioObject || isAudioPlayingSequence) {
@@ -379,7 +577,7 @@
                 }
                 isAudioPlayingSequence = false;
                 clearRepeatButtonsLighting();
-                showToast("Audio playback stopped", "success");
+                showAdminToast("Audio playback stopped", "success");
             }
         });
 
@@ -388,18 +586,8 @@
         });
 
         const totalSegments = 18;
-        
-        let sliderValues = {
-            speed: 0.5,       /* النصف تماماً */
-            wait: 0.75,       /* بين النصف والسريع */
-            comma: 0.75       /* بين النصف والسريع */
-        };
-
-        let maxReachedFlags = {
-            speed: false,
-            wait: false,
-            comma: false
-        };
+        let sliderValues = { speed: 0.5, wait: 0.75, comma: 0.75 };
+        let maxReachedFlags = { speed: false, wait: false, comma: false };
 
         const speedOptions = [0.75, 0.85, 0.95, 1.0, 1.1, 'lightning'];
         const waitOptions = [100, 300, 500, 700, 1000, 'lightning'];
@@ -408,29 +596,25 @@
         function getActiveSpeed() {
             let idx = Math.floor(sliderValues.speed * (speedOptions.length - 1));
             let val = speedOptions[Math.max(0, Math.min(speedOptions.length - 1, idx))];
-            if (val === 'lightning') return 1.4;
-            return val;
+            return val === 'lightning' ? 1.4 : val;
         }
 
         function getActiveWaitTime() {
             let idx = Math.floor(sliderValues.wait * (waitOptions.length - 1));
             let val = waitOptions[Math.max(0, Math.min(waitOptions.length - 1, idx))];
-            if (val === 'lightning') return 50;
-            return val;
+            return val === 'lightning' ? 50 : val;
         }
 
         function getActiveCommaWait() {
             let idx = Math.floor(sliderValues.comma * (commaOptions.length - 1));
             let val = commaOptions[Math.max(0, Math.min(commaOptions.length - 1, idx))];
-            if (val === 'lightning') return 50;
-            return val;
+            return val === 'lightning' ? 50 : val;
         }
 
         function initSliders() {
             ['speed', 'wait', 'comma'].forEach(type => {
                 const track = document.getElementById(`slider${type.charAt(0).toUpperCase() + type.slice(1)}`);
                 track.innerHTML = '<div class="custom-slider-thumb" id="thumb' + type.charAt(0).toUpperCase() + type.slice(1) + '"></div>';
-                
                 for (let i = 0; i < totalSegments; i++) {
                     const seg = document.createElement('div');
                     seg.className = "custom-slider-segment";
@@ -445,18 +629,14 @@
             const val = sliderValues[type];
             const thumbName = `thumb${type.charAt(0).toUpperCase() + type.slice(1)}`;
             const thumb = document.getElementById(thumbName);
-            
             const percentage = val * 100;
             if (thumb) {
                 thumb.style.left = `${percentage}%`;
-                
                 if (val >= 0.99) {
                     if (!maxReachedFlags[type]) {
                         maxReachedFlags[type] = true;
                         thumb.classList.add('thumb-vibrate');
-                        setTimeout(() => {
-                            thumb.classList.remove('thumb-vibrate');
-                        }, 300);
+                        setTimeout(() => thumb.classList.remove('thumb-vibrate'), 300);
                     }
                 } else {
                     maxReachedFlags[type] = false;
@@ -465,55 +645,22 @@
 
             if (type === 'speed') {
                 let currentSpeed = getActiveSpeed();
-                if (currentSpeed === 1.4) {
-                    document.getElementById('valSpeed').innerHTML = '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>';
-                } else {
-                    document.getElementById('valSpeed').textContent = currentSpeed + 'x';
-                }
+                document.getElementById('valSpeed').innerHTML = currentSpeed === 1.4 ? '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>' : currentSpeed + 'x';
             } else if (type === 'wait') {
                 let currentWait = getActiveWaitTime();
-                if (currentWait === 50) {
-                    document.getElementById('valWait').innerHTML = '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>';
-                } else {
-                    document.getElementById('valWait').textContent = currentWait + 'ms';
-                }
+                document.getElementById('valWait').innerHTML = currentWait === 50 ? '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>' : currentWait + 'ms';
             } else if (type === 'comma') {
                 let currentComma = getActiveCommaWait();
-                if (currentComma === 50) {
-                    document.getElementById('valComma').innerHTML = '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>';
-                } else {
-                    document.getElementById('valComma').textContent = currentComma + 'ms';
-                }
+                document.getElementById('valComma').innerHTML = currentComma === 50 ? '<i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i>' : currentComma + 'ms';
             }
 
             const activeCount = Math.round(val * totalSegments);
             for (let i = 0; i < totalSegments; i++) {
                 const seg = document.getElementById(`seg-${type}-${i}`);
                 if (!seg) continue;
-
                 if (i < activeCount) {
-                    let colorClass = "";
-                    let shadowClass = "";
-                    if (i < 3) {
-                        colorClass = "bg-rose-600";
-                        shadowClass = "shadow-[0_0_3px_rgba(225,29,72,0.6)]";
-                    } else if (i < 6) {
-                        colorClass = "bg-orange-500";
-                        shadowClass = "shadow-[0_0_3px_rgba(249,115,22,0.6)]";
-                    } else if (i < 9) {
-                        colorClass = "bg-yellow-400";
-                        shadowClass = "shadow-[0_0_3px_rgba(250,204,21,0.6)]";
-                    } else if (i < 12) {
-                        colorClass = "bg-lime-500";
-                        shadowClass = "shadow-[0_0_3px_rgba(132,204,22,0.6)]";
-                    } else if (i < 15) {
-                        colorClass = "bg-emerald-500";
-                        shadowClass = "shadow-[0_0_3px_rgba(16,185,129,0.6)]";
-                    } else {
-                        colorClass = "bg-sky-500";
-                        shadowClass = "shadow-[0_0_3px_rgba(14,165,233,0.6)]";
-                    }
-                    seg.className = `custom-slider-segment ${colorClass} ${shadowClass}`;
+                    let colorClass = i < 3 ? "bg-rose-600" : i < 6 ? "bg-orange-500" : i < 9 ? "bg-yellow-400" : i < 12 ? "bg-lime-500" : i < 15 ? "bg-emerald-500" : "bg-sky-500";
+                    seg.className = `custom-slider-segment ${colorClass}`;
                 } else {
                     seg.className = "custom-slider-segment bg-slate-800";
                 }
@@ -521,12 +668,11 @@
         }
 
         let activeSliderType = null;
-
         function startSliderDrag(e, type) {
+            e.stopPropagation();
             e.preventDefault();
             activeSliderType = type;
             updateSliderPositionFromEvent(e, type);
-
             window.addEventListener('mousemove', onSliderDrag);
             window.addEventListener('mouseup', stopSliderDrag);
             window.addEventListener('touchmove', onSliderDrag);
@@ -542,10 +688,8 @@
             const track = document.getElementById(`slider${type.charAt(0).toUpperCase() + type.slice(1)}`);
             const rect = track.getBoundingClientRect();
             const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-            
             let pos = (clientX - rect.left) / rect.width;
             pos = Math.max(0, Math.min(1, pos));
-            
             sliderValues[type] = pos;
             updateSliderVisuals(type);
         }
@@ -558,16 +702,6 @@
             window.removeEventListener('touchend', stopSliderDrag);
         }
 
-        ['speed', 'wait', 'comma'].forEach(type => {
-            const track = document.getElementById(`slider${type.charAt(0).toUpperCase() + type.slice(1)}`);
-            if (track) {
-                track.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    updateSliderPositionFromEvent(e, type);
-                });
-            }
-        });
-
         function clearRepeatButtonsLighting() {
             document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('playing-active'));
             activePlayingRepeatCount = null;
@@ -579,7 +713,6 @@
             activePlayingRepeatCount = count;
             const targetBtn = document.getElementById(`btnRep${count}`);
             if (targetBtn) targetBtn.classList.add('playing-active');
-            
             executeWordPlayback(count, false);
         }
 
@@ -590,87 +723,9 @@
         const BUCKET_NAME = "audio-files"; 
 
         const translations = {
-            en: {
-                headerSub: "pronounce on the go",
-                adminText: "Color it up",
-                adminPanelTitle: "Fedawy Admin Panel",
-                adminTrainerOnly: "Trainer Only",
-                adminPassLabel: "Enter Admin Password:",
-                adminLoginBtn: "Login",
-                adminWordLabel: "word (s):",
-                recordWordAudio: "Record word audio:",
-                uploadSaveBtn: "Upload & Save to Database",
-                labelName: "Your name *",
-                namePlaceholder: "Enter trainee name here...",
-                labelWord: "word (s)",
-                wordPlaceholder: "Type words...",
-                speakBtn: "Listen once",
-                downloadBtn: "Take your words with you !",
-                labelTrans: "Translation / Meaning",
-                recTitle: "Your turn",
-                recDesc: "Tap microphone and pronounce clearly",
-                subTitle: "Review & Speech Accuracy",
-                subDesc: "Real-time speech recognition & phoneme accuracy",
-                noAudio: "No trainee recording yet",
-                scoreText: "Pronunciation Match Score:",
-                sendBtn: "Send me",
-                arabicMeaningBtn: "Arabic Meaning",
-                englishMeaningBtn: "English Meaning"
-            },
-            ar: {
-                headerSub: "انطق وأنت في طريقك",
-                adminText: "لوحة التحكم الملونة",
-                adminPanelTitle: "لوحة إدارة الفداوي",
-                adminTrainerOnly: "للمدرب فقط",
-                adminPassLabel: "أدخل كلمة مرور المدرب:",
-                adminLoginBtn: "دخول",
-                adminWordLabel: "الكلمة (الكلمات):",
-                recordWordAudio: "سجل صوت الكلمة:",
-                uploadSaveBtn: "رفع وحفظ في قاعدة البيانات",
-                labelName: "اسمك *",
-                namePlaceholder: "اكتب اسم المتدرب هنا...",
-                labelWord: "الكلمة (الكلمات)",
-                wordPlaceholder: "اكتب الكلمات...",
-                speakBtn: "استمع مرة واحدة",
-                downloadBtn: "خذ كلماتك معك !",
-                labelTrans: "الترجمة / المعنى",
-                recTitle: "دورك الآن",
-                recDesc: "اضغط على الميكروفون وانطق الكلمة بوضوح",
-                subTitle: "المراجعة ودقة النطق",
-                subDesc: "التعرف الصوتي المباشر ودقة مخارج الحروف",
-                noAudio: "لا يوجد تسجيل للمتدرب حتى الآن",
-                scoreText: "درجة مطابقة النطق:",
-                sendBtn: "أرسل لي",
-                arabicMeaningBtn: "المعنى بالعربية",
-                englishMeaningBtn: "المعنى بالإنجليزية"
-            },
-            eg: {
-                headerSub: "انطق وانت ماشي",
-                adminText: "ظبط الدنيا",
-                adminPanelTitle: "لوحة تحكم الفداوي",
-                adminTrainerOnly: "للمدرب بس",
-                adminPassLabel: "اكتب باسورد المدرب:",
-                adminLoginBtn: "دخول",
-                adminWordLabel: "الكلمة (الكلمات):",
-                recordWordAudio: "سجل صوت الكلمة:",
-                uploadSaveBtn: "ارفع واحفظ في الداتابيز",
-                labelName: "اسمك *",
-                namePlaceholder: "اكتب اسمك هنا يابطل...",
-                labelWord: "الكلمة (الكلمات)",
-                wordPlaceholder: "اكتب الكلمات...",
-                speakBtn: "اسمع مرة واحدة",
-                downloadBtn: "خد كلماتك معاك !",
-                labelTrans: "الترجمة والمعنى",
-                recTitle: "دورك يابطل",
-                recDesc: "دوس ع الميكروفون وانطق الكلمة صح",
-                subTitle: "مراجعة ونطق دقيق",
-                subDesc: "تقييم مباشر وصوت حقيقي بيقيس دقة نطقك",
-                noAudio: "مفيش تسجيل لسه يا معلم",
-                scoreText: "نسبة تطابق النطق:",
-                sendBtn: "ابعتهالي",
-                arabicMeaningBtn: "المعنى بالعربي",
-                englishMeaningBtn: "المعنى بالإنجليزي"
-            }
+            en: { headerSub: "pronounce on the go", adminText: "Color it up", adminPanelTitle: "Fedawy Admin Panel", adminTrainerOnly: "Trainer Only", adminPassLabel: "Enter Admin Password:", adminLoginBtn: "Login", adminWordLabel: "word (s):", recordWordAudio: "Record word audio:", uploadSaveBtn: "Upload & Save to Database", labelName: "Your name *", namePlaceholder: "Enter trainee name here...", labelWord: "your word (s)", wordPlaceholder: "Type words...", speakBtn: "Listen once", downloadBtn: "Take your words with you !", labelTrans: "Translation / Meaning", recTitle: "Your turn", recDesc: "Tap microphone and pronounce clearly", subTitle: "Review & Speech Accuracy", subDesc: "Real-time speech recognition & phoneme accuracy", noAudio: "No trainee recording yet", scoreText: "Pronunciation Match Score:", sendBtn: "Send me", arabicMeaningBtn: "Arabic Meaning", englishMeaningBtn: "English Meaning" },
+            ar: { headerSub: "انطق وأنت في طريقك", adminText: "لوحة التحكم", adminPanelTitle: "لوحة إدارة الفداوي", adminTrainerOnly: "للمدرب فقط", adminPassLabel: "أدخل كلمة مرور المدرب:", adminLoginBtn: "دخول", adminWordLabel: "الكلمة (الكلمات):", recordWordAudio: "سجل صوت الكلمة:", uploadSaveBtn: "رفع وحفظ في قاعدة البيانات", labelName: "اسمك *", namePlaceholder: "اكتب اسم المتدرب هنا...", labelWord: "your word (s)", wordPlaceholder: "اكتب الكلمات...", speakBtn: "استمع مرة واحدة", downloadBtn: "خذ كلماتك معك !", labelTrans: "الترجمة / المعنى", recTitle: "دورك الآن", recDesc: "اضغط على الميكروفون وانطق الكلمة بوضوح", subTitle: "المراجعة ودقة النطق", subDesc: "التعرف الصوتي المباشر ودقة مخارج الحروف", noAudio: "لا يوجد تسجيل للمتدرب حتى الآن", scoreText: "درجة مطابقة النطق:", sendBtn: "أرسل لي", arabicMeaningBtn: "المعنى بالعربية", englishMeaningBtn: "المعنى بالإنجليزية" },
+            eg: { headerSub: "انطق وانت ماشي", adminText: "ظبط الدنيا", adminPanelTitle: "لوحة تحكم الفداوي", adminTrainerOnly: "للمدرب بس", adminPassLabel: "اكتب باسورد المدرب:", adminLoginBtn: "دخول", adminWordLabel: "الكلمة (الكلمات):", recordWordAudio: "سجل صوت الكلمة:", uploadSaveBtn: "ارفع واحفظ في الداتابيز", labelName: "اسمك *", namePlaceholder: "اكتب اسمك هنا يابطل...", labelWord: "your word (s)", wordPlaceholder: "اكتب الكلمات...", speakBtn: "اسمع مرة واحدة", downloadBtn: "خد كلماتك معاك !", labelTrans: "الترجمة والمعنى", recTitle: "دورك يابطل", recDesc: "دوس ع الميكروفون وانطق الكلمة صح", subTitle: "مراجعة ونطق دقيق", subDesc: "تقييم مباشر وصوت حقيقي بيقيس دقة نطقك", noAudio: "مفيش تسجيل لسه يا معلم", scoreText: "نسبة تطابق النطق:", sendBtn: "ابعتهالي", arabicMeaningBtn: "المعنى بالعربي", englishMeaningBtn: "المعنى بالإنجليزي" }
         };
 
         function setLanguage(lang) {
@@ -681,7 +736,6 @@
 
             const t = translations[lang];
             const htmlRoot = document.getElementById('htmlRoot');
-
             if (lang === 'ar' || lang === 'eg') {
                 htmlRoot.setAttribute('dir', 'rtl');
                 htmlRoot.setAttribute('lang', lang === 'ar' ? 'ar' : 'arz');
@@ -699,23 +753,17 @@
             document.getElementById('uiLabelAdminWord').textContent = t.adminWordLabel;
             document.getElementById('uiRecordWordAudio').textContent = t.recordWordAudio;
             document.getElementById('uiUploadSaveBtn').textContent = t.uploadSaveBtn;
-            
             document.getElementById('uiLabelName').innerHTML = `<i class="fa-solid fa-user text-indigo-400"></i> ${t.labelName}`;
             document.getElementById('userNameInput').placeholder = t.namePlaceholder;
-            
             document.getElementById('uiLabelWord').innerHTML = `<i class="fa-solid fa-pen-nib text-indigo-400"></i> ${t.labelWord}`;
             document.getElementById('wordInput').placeholder = t.wordPlaceholder;
-            
             document.getElementById('uiSpeakBtn').textContent = t.speakBtn;
             document.getElementById('uiDownloadBtn').textContent = t.downloadBtn;
             document.getElementById('uiLabelTrans').innerHTML = `<i class="fa-solid fa-language text-indigo-400"></i> ${t.labelTrans}`;
-            
             document.getElementById('modeArBtn').textContent = t.arabicMeaningBtn;
             document.getElementById('modeEnBtn').textContent = t.englishMeaningBtn;
-
             document.getElementById('uiRecTitle').textContent = t.recTitle;
             document.getElementById('uiRecDesc').textContent = t.recDesc;
-            
             document.getElementById('uiSubTitle').textContent = t.subTitle;
             document.getElementById('uiSubDesc').textContent = t.subDesc;
             document.getElementById('noAudioPlaceholder').textContent = t.noAudio;
@@ -723,7 +771,97 @@
             document.getElementById('uiSendBtn').textContent = t.sendBtn;
         }
 
-        let currentMeaningMode = 'en';
+        function showGeneralToast(msg, type) {
+            const toast = document.getElementById('generalToast');
+            const toastMsg = document.getElementById('generalToastMsg');
+            const toastIcon = document.getElementById('generalToastIcon');
+
+            if (type === 'orange' || type === 'error') {
+                toast.className = "fixed top-5 left-1/2 -translate-x-1/2 p-3.5 rounded-xl border text-xs flex items-center gap-2.5 shadow-2xl bg-orange-500/20 border-orange-500/40 text-orange-200 w-full max-w-md z-50 backdrop-blur-md";
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-orange-400 text-sm";
+            } else if (type === 'red') {
+                toast.className = "fixed top-5 left-1/2 -translate-x-1/2 p-3.5 rounded-xl border text-xs flex items-center gap-2.5 shadow-2xl bg-rose-500/20 border-rose-500/40 text-rose-200 w-full max-w-md z-50 backdrop-blur-md";
+                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-sm";
+            } else {
+                toast.className = "fixed top-5 left-1/2 -translate-x-1/2 p-3.5 rounded-xl border text-xs flex items-center gap-2.5 shadow-2xl bg-emerald-500/20 border-emerald-500/40 text-emerald-200 w-full max-w-md z-50 backdrop-blur-md";
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-sm";
+            }
+            toastMsg.textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 5000);
+        }
+
+        let mainWordValidationTimer = null;
+        function handleMainWordInput(value) {
+            fetchSmartTranslation();
+            clearTimeout(mainWordValidationTimer);
+            mainWordValidationTimer = setTimeout(() => {
+                checkMainWordStatus(value);
+            }, 400);
+        }
+
+        async function checkMainWordStatus(wordVal) {
+            const inputField = document.getElementById('wordInput');
+            const cleanVal = wordVal.trim();
+            
+            inputField.className = "w-full bg-slate-900/90 border border-slate-700 rounded-2xl px-5 py-4 text-base font-semibold text-white placeholder-slate-500 focus:outline-none transition-all duration-300";
+
+            if (!cleanVal) return;
+
+            const wordsList = cleanVal.split(',').map(w => w.trim()).filter(w => w.length > 0);
+            
+            for (let word of wordsList) {
+                const isEnglishChars = /^[A-Za-z\s]+$/.test(word);
+                const hasRandomRepetition = /(.)\1{2,}/.test(word);
+                const hasVowels = /[aeiouyAEIOUY]/.test(word);
+                const isValidLength = word.length >= 2 || ['a', 'i', 'A', 'I'].includes(word);
+
+                if (!isEnglishChars || hasRandomRepetition || !hasVowels || !isValidLength) {
+                    inputField.classList.add('border', 'border-red-500');
+                    showGeneralToast("⚠️ عذراً، هذا يعتبر كلاماً عشوائياً أو ليس كلمة إنجليزية صحيحة! لن يتم اعتماده أو إرساله.", "red");
+                    return; 
+                }
+            }
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const dbData = await res.json();
+                const lowerWordsList = wordsList.map(w => w.toLowerCase());
+                
+                let allExist = true;
+                if (dbData && dbData.length > 0) {
+                    allExist = lowerWordsList.every(w => dbData.some(r => r.word && r.word.toLowerCase().trim() === w && r.audio_url));
+                } else {
+                    allExist = false;
+                }
+
+                if (allExist) {
+                    inputField.classList.add('running-glow-border');
+                } else {
+                    inputField.classList.add('border', 'border-orange-500');
+                    showGeneralToast("كلمة إنجليزية سليمة، ولكن ليس لها تسجيل صوتي بعد في قاعدة البيانات. سنحاول توفيرها قريباً!", "orange");
+
+                    let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+                    let addedNew = false;
+                    for (let word of wordsList) {
+                        if (!localDue.some(item => item.word.toLowerCase() === word.toLowerCase())) {
+                            localDue.push({ word: word, checked: false, date: new Date().toISOString() });
+                            addedNew = true;
+                        }
+                    }
+                    if (addedNew) {
+                        localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                        loadDueWordsList();
+                    }
+                }
+            } catch (err) {
+                inputField.classList.add('border', 'border-orange-500');
+            }
+        }
+
+        let currentMeaningMode = 'ar';
         function setMeaningMode(mode) {
             currentMeaningMode = mode;
             const arBtn = document.getElementById('modeArBtn');
@@ -738,73 +876,148 @@
             fetchSmartTranslation();
         }
 
-        let checkMissingWordsTimer = null;
-        document.getElementById('wordInput').addEventListener('input', () => {
-            clearTimeout(checkMissingWordsTimer);
-            checkMissingWordsTimer = setTimeout(async () => {
-                const query = document.getElementById('wordInput').value.trim();
-                if (!query) return;
-
-                const wordsArr = query.split(',').map(w => w.trim()).filter(w => /^[A-Za-z\s]+$/.test(w) && w.length > 1);
-                if (wordsArr.length === 0) return;
-
-                try {
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
-                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-                    });
-                    const dbData = await res.json();
-                    const existingWords = dbData ? dbData.map(r => r.word.toLowerCase().trim()) : [];
-
-                    let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
-                    let addedNew = false;
-
-                    for (let word of wordsArr) {
-                        const cleanWord = word.toLowerCase().trim();
-                        if (!existingWords.includes(cleanWord)) {
-                            const checkUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(cleanWord)}`;
-                            const transRes = await fetch(checkUrl);
-                            const transData = await transRes.json();
-                            if (transData && transData[0] && transData[0][0] && transData[0][0][0]) {
-                                if (!localDue.some(item => item.word.toLowerCase() === cleanWord)) {
-                                    localDue.push({ word: cleanWord, checked: false, date: new Date().toLocaleDateString() });
-                                    addedNew = true;
-                                }
-                            }
-                        }
-                    }
-
-                    if (addedNew) {
-                        localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
-                        loadDueWordsList();
-                    }
-                } catch (err) {}
-            }, 2500);
-        });
-
         function loadDueWordsList() {
             const container = document.getElementById('dueWordsContainer');
             const countBadge = document.getElementById('dueWordsCount');
-            const localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
-            
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
             countBadge.textContent = localDue.length;
             if (localDue.length === 0) {
                 container.innerHTML = `<span class="text-xs text-slate-500 text-center py-2">No pending words right now.</span>`;
+                const selectAllDueCheckbox = document.getElementById('selectAllDue');
+                if (selectAllDueCheckbox) selectAllDueCheckbox.checked = false;
                 return;
             }
-
             container.innerHTML = "";
             localDue.forEach((item, index) => {
                 const row = document.createElement('div');
                 row.className = "flex items-center justify-between bg-slate-950/70 px-3 py-2 rounded-lg border border-slate-800/80 text-xs";
                 row.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleDueWordCheck(${index})" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                        <span class="font-mono text-amber-400 font-bold">#${index + 1}</span>
+                        <input type="checkbox" data-due-index="${index}" ${item.checked ? 'checked' : ''} onchange="toggleDueWordCheck(${index})" class="due-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer">
                         <span class="${item.checked ? 'line-through text-slate-500' : 'text-slate-200 font-medium'}">${item.word}</span>
                     </div>
-                    <span class="text-[10px] text-slate-500">${item.date}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-500">${new Date(item.date).toLocaleDateString()}</span>
+                        <button type="button" onclick="moveToTrashFromDue(${index})" title="Move to Trash" class="text-slate-400 hover:text-rose-400 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </div>
                 `;
                 container.appendChild(row);
             });
+            updateSelectAllDueState();
+        }
+
+        function toggleSelectAllDue(masterCheckbox) {
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            localDue.forEach(item => item.checked = masterCheckbox.checked);
+            localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+            loadDueWordsList();
+        }
+
+        function updateSelectAllDueState() {
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            const selectAllDueCheckbox = document.getElementById('selectAllDue');
+            if (!selectAllDueCheckbox || localDue.length === 0) return;
+            const allChecked = localDue.every(item => item.checked);
+            selectAllDueCheckbox.checked = allChecked;
+        }
+
+        function handleAdminSpacebar(event) {
+            if (event.key === ' ' || event.code === 'Space') {
+                const inputField = document.getElementById('newWordInput');
+                if (inputField.value.trim() === '') {
+                    event.preventDefault(); 
+                    let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+                    if (localDue.length > 0) {
+                        const nextWordObj = localDue[0];
+                        inputField.value = nextWordObj.word;
+                        showAdminToast(`Pulled next word: "${nextWordObj.word}"`, "success");
+                        checkIfWordExistsInDb(nextWordObj.word);
+                    } else {
+                        showAdminToast("No pending due words available", "error");
+                    }
+                }
+            }
+        }
+
+        function moveToTrashFromDue(index) {
+            let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
+            let trashBin = JSON.parse(localStorage.getItem('fedawy_trash_bin') || '[]');
+            const item = localDue[index];
+            if (item) {
+                trashBin.push({ ...item, trashDate: new Date().toISOString() });
+                localStorage.setItem('fedawy_trash_bin', JSON.stringify(trashBin));
+                localDue.splice(index, 1);
+                localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                loadDueWordsList();
+                loadTrashBinList();
+                showAdminToast("Moved item to trash bin", "success");
+            }
+        }
+
+        function checkAndProcessTrashBin() {
+            let trashBin = JSON.parse(localStorage.getItem('fedawy_trash_bin') || '[]');
+            const now = new Date().getTime();
+            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+            let remainingTrash = [];
+            trashBin.forEach(item => {
+                let trashDate = new Date(item.trashDate || item.date).getTime();
+                if (isNaN(trashDate)) trashDate = now;
+                if (now - trashDate < THIRTY_DAYS_MS) {
+                    remainingTrash.push(item);
+                }
+            });
+            localStorage.setItem('fedawy_trash_bin', JSON.stringify(remainingTrash));
+        }
+
+        function loadTrashBinList() {
+            const container = document.getElementById('trashWordsContainer');
+            const countBadge = document.getElementById('trashCount');
+            let trashBin = JSON.parse(localStorage.getItem('fedawy_trash_bin') || '[]');
+            countBadge.textContent = trashBin.length;
+
+            if (trashBin.length === 0) {
+                container.innerHTML = `<span class="text-xs text-slate-500 text-center py-2">Trash is empty.</span>`;
+                return;
+            }
+            container.innerHTML = "";
+            trashBin.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between bg-slate-950/70 px-3 py-2 rounded-lg border border-slate-800/80 text-xs";
+                row.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <input type="checkbox" data-trash-index="${index}" class="trash-checkbox w-4 h-4 rounded accent-rose-500 cursor-pointer">
+                        <span class="text-slate-300 font-medium">${item.word}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500">${new Date(item.trashDate || item.date).toLocaleDateString()}</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function toggleSelectAllTrash(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.trash-checkbox');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+        }
+
+        function deleteSelectedTrashItems() {
+            let trashBin = JSON.parse(localStorage.getItem('fedawy_trash_bin') || '[]');
+            const checkboxes = document.querySelectorAll('.trash-checkbox');
+            let indicesToDelete = [];
+            checkboxes.forEach((cb, idx) => {
+                if (cb.checked) indicesToDelete.push(idx);
+            });
+
+            if (indicesToDelete.length === 0) {
+                showAdminToast("Please select items to delete", "error");
+                return;
+            }
+
+            trashBin = trashBin.filter((_, idx) => !indicesToDelete.includes(idx));
+            localStorage.setItem('fedawy_trash_bin', JSON.stringify(trashBin));
+            document.getElementById('selectAllTrash').checked = false;
+            loadTrashBinList();
+            showAdminToast("Selected items permanently deleted from trash", "success");
         }
 
         function toggleDueWordCheck(index) {
@@ -821,7 +1034,7 @@
             localDue = localDue.filter(item => !item.checked);
             localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
             loadDueWordsList();
-            showToast("Completed words cleared", "success");
+            showAdminToast("Checked words cleared from panel", "success");
         }
 
         async function fetchSmartTranslation() {
@@ -853,19 +1066,38 @@
         }
 
         function toggleAdminPanel() { 
-            document.getElementById('adminModalOverlay').classList.toggle('hidden'); 
-            loadDueWordsList();
+            const overlay = document.getElementById('adminModalOverlay');
+            overlay.classList.toggle('hidden'); 
+            
+            if (!overlay.classList.contains('hidden')) {
+                if (sessionStorage.getItem('fedawy_admin_logged') === 'true') {
+                    document.getElementById('adminAuthSection').classList.add('hidden');
+                    document.getElementById('adminContentSection').classList.remove('hidden');
+                    loadDueWordsList();
+                    loadTrashBinList();
+                    setTimeout(() => {
+                        const wordField = document.getElementById('newWordInput');
+                        if (wordField) wordField.focus();
+                    }, 100);
+                }
+            }
         }
 
         function verifyAdminPin() {
             const pin = document.getElementById('adminPinInput').value;
             if (pin === "fadawe123") {
+                sessionStorage.setItem('fedawy_admin_logged', 'true');
                 document.getElementById('adminAuthSection').classList.add('hidden');
                 document.getElementById('adminContentSection').classList.remove('hidden');
-                showToast("Welcome Fedawy, panel unlocked", "success");
+                showAdminToast("Welcome Fedawy, panel unlocked", "success");
                 loadDueWordsList();
+                loadTrashBinList();
+                setTimeout(() => {
+                    const wordField = document.getElementById('newWordInput');
+                    if (wordField) wordField.focus();
+                }, 100);
             } else {
-                showToast("Incorrect password!", "error");
+                showAdminToast("Incorrect password!", "error");
             }
         }
 
@@ -875,7 +1107,7 @@
         let adminIsRecording = false;
         let adminTimerInterval = null;
         let adminSeconds = 0;
-        let selectedConflictAction = 'replace'; // خيارات: استبدال أو إضافة ملاحظة/توضيح
+        let selectedConflictAction = 'replace';
 
         async function checkIfWordExistsInDb(wordVal) {
             const cleanWord = wordVal.trim().toLowerCase();
@@ -905,11 +1137,11 @@
             if (action === 'replace') {
                 btnReplace.className = "flex-1 py-1.5 px-3 rounded-lg bg-amber-600 text-white text-xs font-semibold transition";
                 btnExplain.className = "flex-1 py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition";
-                showToast("Mode set to: Replace Audio", "success");
+                showAdminToast("Mode set to: Replace Audio", "success");
             } else {
                 btnExplain.className = "flex-1 py-1.5 px-3 rounded-lg bg-amber-600 text-white text-xs font-semibold transition";
                 btnReplace.className = "flex-1 py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition";
-                showToast("Mode set to: Add Explanation / Note", "success");
+                showAdminToast("Mode set to: Add Explanation / Note", "success");
             }
         }
 
@@ -930,7 +1162,7 @@
                         playback.src = URL.createObjectURL(adminRecordedBlob);
                         playback.classList.remove('hidden');
                         document.getElementById('saveToSupabaseBtn').removeAttribute('disabled');
-                        showToast("Trainer audio recorded successfully", "success");
+                        showAdminToast("Trainer audio recorded successfully", "success");
                     };
                     adminMediaRecorder.start();
                     adminIsRecording = true;
@@ -954,13 +1186,13 @@
         async function uploadAndSaveToSupabase() {
             const word = document.getElementById('newWordInput').value.trim();
             if (!word || !adminRecordedBlob) {
-                showToast("Type a word and record its audio first!", "error");
+                showAdminToast("Type a word and record its audio first!", "error");
                 return;
             }
             const saveBtn = document.getElementById('saveToSupabaseBtn');
             saveBtn.setAttribute('disabled', 'true');
+            showAdminToast("Uploading to database...", "success");
             try {
-                // تحقق هل الكلمة موجودة مسبقاً ومعالجة الاختيار (Replace vs Explain)
                 const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
                     headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
                 });
@@ -977,45 +1209,51 @@
                 const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${fileName}`;
 
                 if (existingRow && selectedConflictAction === 'replace') {
-                    // تحديث (استبدال) السجل الموجود
                     const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/words_table?id=eq.${existingRow.id}`, {
                         method: 'PATCH',
                         headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ audio_url: publicUrl })
                     });
                     if (!updateRes.ok) throw new Error();
-                    showToast("Audio replaced successfully in Database! 🚀", "success");
+                    showAdminToast("Audio replaced successfully in Database! 🚀", "success");
                 } else if (existingRow && selectedConflictAction === 'explain') {
-                    // إضافة توضيح أو ملاحظة بجانب الكلمة
                     const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/words_table?id=eq.${existingRow.id}`, {
                         method: 'PATCH',
                         headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ audio_url: publicUrl, word: word + " (Explained/Note)" })
                     });
                     if (!updateRes.ok) throw new Error();
-                    showToast("Explanation & Audio saved successfully! 📝", "success");
+                    showAdminToast("Explanation & Audio saved successfully! 📝", "success");
                 } else {
-                    // إدراج جديد كلياً
                     const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/words_table`, {
                         method: 'POST',
                         headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
                         body: JSON.stringify({ word: word, audio_url: publicUrl })
                     });
                     if (!insertRes.ok) throw new Error();
-                    showToast("Saved new word and audio to Database successfully! 🚀", "success");
+                    showAdminToast("Saved new word and audio to Database successfully! 🚀", "success");
                 }
                 
                 let localDue = JSON.parse(localStorage.getItem('fedawy_due_words') || '[]');
-                localDue = localDue.filter(item => item.word.toLowerCase() !== word.toLowerCase());
-                localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                let trashBin = JSON.parse(localStorage.getItem('fedawy_trash_bin') || '[]');
+                
+                const matchedIdx = localDue.findIndex(item => item.word.toLowerCase() === word.toLowerCase());
+                if (matchedIdx !== -1) {
+                    const removedItem = localDue.splice(matchedIdx, 1)[0];
+                    trashBin.push({ ...removedItem, trashDate: new Date().toISOString() });
+                    localStorage.setItem('fedawy_due_words', JSON.stringify(localDue));
+                    localStorage.setItem('fedawy_trash_bin', JSON.stringify(trashBin));
+                }
+
                 loadDueWordsList();
+                loadTrashBinList();
 
                 document.getElementById('newWordInput').value = "";
                 document.getElementById('adminAudioPlayback').classList.add('hidden');
                 document.getElementById('dbWordConflictBox').classList.add('hidden');
                 adminRecordedBlob = null;
             } catch (err) {
-                showToast("Error during upload", "error");
+                showAdminToast("Error during upload", "error");
             } finally {
                 saveBtn.removeAttribute('disabled');
             }
@@ -1033,8 +1271,6 @@
         const ratingBadge = document.getElementById('ratingBadge');
         const recognizedTextText = document.getElementById('recognizedTextText');
         const sendTelegramBtn = document.getElementById('sendTelegramBtn');
-        const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toastMsg');
 
         speakBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1049,11 +1285,10 @@
                 });
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    const targetClean = wordText.toLowerCase();
-                    for (let row of data) {
-                        if (row.word && row.word.toLowerCase().includes(targetClean)) {
-                            return row.audio_url;
-                        }
+                    const targetClean = wordText.toLowerCase().trim();
+                    const exactMatch = data.find(row => row.word && row.word.toLowerCase().trim() === targetClean);
+                    if (exactMatch) {
+                        return exactMatch.audio_url;
                     }
                 }
             } catch (err) {}
@@ -1063,29 +1298,25 @@
         async function executeWordPlayback(timesToRepeat, isListenButton = false) {
             const rawInput = wordInput.value.trim();
             if (!rawInput) {
-                showToast("Type words first!", "error");
+                showAdminToast("Type words first!", "error");
                 clearRepeatButtonsLighting();
                 return;
             }
-
             const wordsList = rawInput.split(',').map(w => w.trim()).filter(w => w.length > 0);
             if (wordsList.length === 0) {
                 clearRepeatButtonsLighting();
                 return;
             }
-
             let audioUrlsList = [];
             for (let w of wordsList) {
                 let url = await fetchAudioUrlForWord(w);
                 if (url) audioUrlsList.push({ word: w, url: url });
             }
-
             if (audioUrlsList.length === 0) {
-                showToast("Sorry, audio files for words not found in database", "error");
+                showAdminToast("Sorry, exact audio file not found in database for this input", "error");
                 clearRepeatButtonsLighting();
                 return;
             }
-
             playSequenceFullyCustomized(audioUrlsList, timesToRepeat, getActiveSpeed(), getActiveWaitTime(), getActiveCommaWait(), isListenButton);
         }
 
@@ -1099,7 +1330,6 @@
                     clearRepeatButtonsLighting();
                     return;
                 }
-                
                 if (currentItemIndex >= itemsList.length) {
                     playedReps++;
                     if (playedReps < times) {
@@ -1113,7 +1343,6 @@
                         return;
                     }
                 }
-
                 const currentItem = itemsList[currentItemIndex];
                 const sound = new Audio(currentItem.url);
                 sound.playbackRate = speed;
@@ -1127,14 +1356,8 @@
                         setTimeout(playNext, repWaitMs);
                     }
                 };
-                sound.onerror = () => {
-                    currentItemIndex++;
-                    playNext();
-                };
-                sound.play().catch(() => {
-                    currentItemIndex++;
-                    playNext();
-                });
+                sound.onerror = () => { currentItemIndex++; playNext(); };
+                sound.play().catch(() => { currentItemIndex++; playNext(); });
             }
             playNext();
         }
@@ -1142,19 +1365,15 @@
         async function downloadCombinedAudioPackage() {
             const rawInput = wordInput.value.trim();
             if (!rawInput) {
-                showToast("Type words first to download!", "error");
+                showAdminToast("Type words first to download!", "error");
                 return;
             }
-
             const wordsList = rawInput.split(',').map(w => w.trim()).filter(w => w.length > 0);
             if (wordsList.length === 0) return;
-
-            showToast("Preparing and merging audio files...", "success");
-
+            showAdminToast("Preparing and merging audio files...", "success");
             try {
                 let audioBuffers = [];
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
                 for (let w of wordsList) {
                     let url = await fetchAudioUrlForWord(w);
                     if (url) {
@@ -1166,24 +1385,18 @@
                         } catch (e) {}
                     }
                 }
-
                 if (audioBuffers.length === 0) {
-                    showToast("No matching audio files found in database", "error");
+                    showAdminToast("No exact matching audio files found in database", "error");
                     return;
                 }
-
                 const commaWaitSeconds = getActiveCommaWait() / 1000.0;
                 let totalLength = 0;
                 const sampleRate = audioCtx.sampleRate;
                 const commaWaitSamples = Math.floor(commaWaitSeconds * sampleRate);
-
                 audioBuffers.forEach((buf, idx) => {
                     totalLength += buf.length;
-                    if (idx < audioBuffers.length - 1) {
-                        totalLength += commaWaitSamples;
-                    }
+                    if (idx < audioBuffers.length - 1) totalLength += commaWaitSamples;
                 });
-
                 const combinedBuffer = audioCtx.createBuffer(2, totalLength, sampleRate);
                 for (let channel = 0; channel < combinedBuffer.numberOfChannels; channel++) {
                     const outputData = combinedBuffer.getChannelData(channel);
@@ -1192,12 +1405,9 @@
                         const inputData = buf.getChannelData(channel < buf.numberOfChannels ? channel : 0);
                         outputData.set(inputData, offset);
                         offset += inputData.length;
-                        if (idx < audioBuffers.length - 1) {
-                            offset += commaWaitSamples;
-                        }
+                        if (idx < audioBuffers.length - 1) offset += commaWaitSamples;
                     });
                 }
-
                 const wavBlob = bufferToWavBlob(combinedBuffer);
                 const blobUrl = URL.createObjectURL(wavBlob);
                 const downloadLink = document.createElement('a');
@@ -1206,11 +1416,9 @@
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
-
-                showToast("Audio package downloaded successfully! 🎧", "success");
-
+                showAdminToast("Audio package downloaded successfully! 🎧", "success");
             } catch (err) {
-                showToast("Error merging audio", "error");
+                showAdminToast("Error merging audio", "error");
             }
         }
 
@@ -1219,16 +1427,13 @@
                 length = buffer.length * numOfChan * 2 + 44,
                 out = new DataView(new ArrayBuffer(length)),
                 channels = [];
-            let sampleRate = buffer.sampleRate,
-                offset = 0,
-                pos = 0;
+            let sampleRate = buffer.sampleRate, offset = 0, pos = 0;
 
             function writeString(str) {
                 for (let i = 0; i < str.length; i++) {
                     out.setUint8(pos++, str.charCodeAt(i));
                 }
             }
-
             writeString('RIFF');
             out.setUint32(pos, length - 8, true); pos += 4;
             writeString('WAVE');
@@ -1242,11 +1447,7 @@
             out.setUint16(pos, 16, true); pos += 2;
             writeString('data');
             out.setUint32(pos, length - pos - 4, true); pos += 4;
-
-            for (let i = 0; i < buffer.numberOfChannels; i++) {
-                channels.push(buffer.getChannelData(i));
-            }
-
+            for (let i = 0; i < buffer.numberOfChannels; i++) channels.push(buffer.getChannelData(i));
             while (offset < buffer.length) {
                 for (let i = 0; i < numOfChan; i++) {
                     let sample = Math.max(-1, Math.min(1, channels[i][offset]));
@@ -1291,7 +1492,7 @@
         recordBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
             if (!userNameInput.value.trim()) {
-                showToast("Please enter trainee name first!", "error");
+                showAdminToast("Please enter trainee name first!", "error");
                 userNameInput.focus();
                 return;
             }
@@ -1308,7 +1509,7 @@
                         noAudioPlaceholder.classList.add('hidden');
                         await evaluateRealPronunciationScore();
                         sendTelegramBtn.removeAttribute('disabled');
-                        showToast("Audio analyzed and evaluated successfully!", "success");
+                        showAdminToast("Audio analyzed and evaluated successfully!", "success");
                     };
 
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1360,7 +1561,7 @@
                 let hasDbRecord = false;
                 if (data && data.length > 0) {
                     const targetWords = rawWord.split(',').map(w => w.trim().toLowerCase());
-                    hasDbRecord = targetWords.every(tw => data.some(r => r.word && r.word.toLowerCase().includes(tw)));
+                    hasDbRecord = targetWords.every(tw => data.some(r => r.word && r.word.toLowerCase().trim() === tw));
                 }
                 if (!hasDbRecord) {
                     ratingBadge.textContent = "0 / 10";
@@ -1411,20 +1612,30 @@
                 formData.append('caption', `👤 Trainee: ${userNameInput.value}\nWords: ${wordInput.value}\nScore: ${ratingBadge.textContent}\nRecognized: ${recognizedTextText.textContent}`);
                 const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`, { method: 'POST', body: formData });
                 const json = await res.json();
-                if (json.ok) showToast("Sent to Telegram successfully!", "success");
+                if (json.ok) showAdminToast("Sent to Telegram successfully!", "success");
                 else throw new Error();
             } catch (e) {
-                showToast("Failed to send to Telegram", "error");
+                showAdminToast("Failed to send to Telegram", "error");
             } finally {
                 sendTelegramBtn.removeAttribute('disabled');
             }
         });
 
-        function showToast(msg, type) {
-            toast.className = `p-4 rounded-xl border text-sm flex items-center gap-3 shadow-lg z-50 ${type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`;
-            toastMsg.textContent = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 4000);
+        function showAdminToast(msg, type) {
+            const adminToast = document.getElementById('adminToast');
+            const adminToastMsg = document.getElementById('adminToastMsg');
+            const adminToastIcon = document.getElementById('adminToastIcon');
+
+            if (type === 'success') {
+                adminToast.className = "p-3 rounded-xl border text-xs flex items-center gap-2.5 shadow-lg bg-emerald-500/20 border-emerald-500/40 text-emerald-300 w-full max-w-lg z-50 backdrop-blur-md";
+                adminToastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-sm";
+            } else {
+                adminToast.className = "p-3.5 rounded-xl border text-xs flex items-center gap-2.5 shadow-lg bg-rose-500/20 border-rose-500/40 text-rose-300 w-full max-w-lg z-50 backdrop-blur-md";
+                adminToastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-sm";
+            }
+            adminToastMsg.textContent = msg;
+            adminToast.classList.remove('hidden');
+            setTimeout(() => adminToast.classList.add('hidden'), 4000);
         }
     </script>
 </body>
